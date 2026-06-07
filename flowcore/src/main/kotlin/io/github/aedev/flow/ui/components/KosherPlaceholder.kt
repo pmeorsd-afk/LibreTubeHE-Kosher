@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +41,9 @@ fun KosherPlaceholder(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(if (compact) 6.dp else 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -49,9 +52,10 @@ fun KosherPlaceholder(
                 color = Color.White,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = if (compact) 14.sp else 28.sp
+                    fontSize = if (compact) 18.sp else 28.sp
                 ),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = if (compact) 1 else Int.MAX_VALUE
             )
             if (showSubtitle && !compact) {
                 Text(

@@ -740,8 +740,12 @@ class EnhancedPlayerManager private constructor() {
 
         val audio = audioStream ?: availableAudioStreams.firstOrNull()
         val sabr = currentSabrInfo
-        if (effectiveAudioOnly && audio == null) {
-            Log.w(TAG, "loadMediaInternal: audio-only load requested without an audio stream")
+        val canUseLiveManifestForAudioOnly = effectiveAudioOnly &&
+            audio == null &&
+            (!currentDashManifestUrl.isNullOrEmpty() || !currentHlsUrl.isNullOrEmpty())
+
+        if (effectiveAudioOnly && audio == null && !canUseLiveManifestForAudioOnly) {
+            Log.w(TAG, "loadMediaInternal: audio-only load requested without an audio stream or live manifest")
             return false
         }
         val hasPlayableVideo = videoStream != null ||
@@ -761,8 +765,8 @@ class EnhancedPlayerManager private constructor() {
             audioStream = audio,
             availableVideoStreams = if (effectiveAudioOnly) emptyList() else availableVideoStreams,
             currentVideoStream = if (effectiveAudioOnly) null else currentVideoStream,
-            dashManifestUrl = if (effectiveAudioOnly) null else currentDashManifestUrl,
-            hlsUrl = if (effectiveAudioOnly) null else currentHlsUrl,
+            dashManifestUrl = if (!effectiveAudioOnly || canUseLiveManifestForAudioOnly) currentDashManifestUrl else null,
+            hlsUrl = if (!effectiveAudioOnly || canUseLiveManifestForAudioOnly) currentHlsUrl else null,
             durationSeconds = currentDurationSeconds,
             currentDurationSeconds = currentDurationSeconds,
             preservePosition = preservePosition,

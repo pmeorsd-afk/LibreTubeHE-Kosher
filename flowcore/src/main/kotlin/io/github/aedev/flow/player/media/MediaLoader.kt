@@ -277,6 +277,10 @@ class MediaLoader(
                     ?: dataSourceFactory
             )
 
+            val canUseManifestForAudioOnly = audioOnly &&
+                audioStream == null &&
+                (!dashManifestUrl.isNullOrEmpty() || !hlsUrl.isNullOrEmpty())
+
             val selectedStreams = if (audioOnly) {
                 emptyList()
             } else if (videoStream != null) {
@@ -290,8 +294,8 @@ class MediaLoader(
             resolver.resolve(
                 selectedStreams,
                 audioStream,
-                dashManifestUrl = if (audioOnly) null else dashManifestUrl,
-                hlsUrl = if (audioOnly) null else hlsUrl,
+                dashManifestUrl = if (!audioOnly || canUseManifestForAudioOnly) dashManifestUrl else null,
+                hlsUrl = if (!audioOnly || canUseManifestForAudioOnly) hlsUrl else null,
                 durationSeconds = finalDuration
             )
         }
