@@ -22,6 +22,7 @@ import io.github.aedev.flow.data.local.PlayerPreferences
 import io.github.aedev.flow.data.local.SponsorBlockAction
 import io.github.aedev.flow.data.local.VideoQuality
 import io.github.aedev.flow.utils.ThumbnailUrlResolver
+import io.github.aedev.flow.utils.KosherMode
 
 // Modular components
 import io.github.aedev.flow.player.audio.AudioFeaturesManager
@@ -232,7 +233,11 @@ class EnhancedPlayerManager private constructor() {
                     loader.releaseSabr()
                     player?.stop()
                     player?.clearMediaItems()
-                    loadMediaInternal(currentVideoStream, currentAudioStream, preservePosition = pos)
+                    if (KosherMode.ENABLED) {
+                        loadMediaInternal(null, currentAudioStream ?: availableAudioStreams.firstOrNull(), preservePosition = pos, audioOnly = true)
+                    } else {
+                        loadMediaInternal(currentVideoStream, currentAudioStream, preservePosition = pos)
+                    }
                 }
             }
         }
@@ -245,7 +250,11 @@ class EnhancedPlayerManager private constructor() {
             onQualitySwitch = { stream, position ->
                 forceSabrPlayback = false
                 currentVideoStream = stream
-                loadMediaInternal(stream, currentAudioStream, position)
+                if (KosherMode.ENABLED) {
+                    loadMediaInternal(null, currentAudioStream ?: availableAudioStreams.firstOrNull(), position, audioOnly = true)
+                } else {
+                    loadMediaInternal(stream, currentAudioStream, position)
+                }
             }
         )
         
@@ -553,8 +562,8 @@ class EnhancedPlayerManager private constructor() {
         currentSabrInfo = sabrInfo
         innerTubeVideoFormats = itVideoFormats
         innerTubeAudioFormats = itAudioFormats
-        isAudioOnlyMode = false
-        setVideoTracksDisabled(false)
+        isAudioOnlyMode = KosherMode.ENABLED
+        setVideoTracksDisabled(KosherMode.ENABLED)
 
         // Reset and load SponsorBlock
         sponsorBlockHandler?.reset()
@@ -621,6 +630,7 @@ class EnhancedPlayerManager private constructor() {
         val resumePos = startPosition.takeIf { it > 0L }
         when {
             localFilePath != null -> loadMediaInternal(null, audioStream, localFilePath = localFilePath, preservePosition = resumePos)
+            KosherMode.ENABLED -> loadMediaInternal(null, currentAudioStream ?: audioStream, preservePosition = resumePos, audioOnly = true)
             currentVideoStream != null -> loadMediaInternal(currentVideoStream, currentAudioStream, preservePosition = resumePos)
             else -> loadMediaInternal(null, currentAudioStream ?: audioStream, preservePosition = resumePos)
         }
@@ -700,7 +710,9 @@ class EnhancedPlayerManager private constructor() {
         localFilePath: String? = null,
         audioOnly: Boolean = false
     ): Boolean {
-        if (audioOnly) {
+        val effectiveAudioOnly = KosherMode.ENABLED || audioOnly
+
+        if (effectiveAudioOnly) {
             setVideoTracksDisabled(true)
         } else if (videoStream != null || localFilePath != null) {
             setVideoTracksDisabled(false)
@@ -711,24 +723,24 @@ class EnhancedPlayerManager private constructor() {
             return mediaLoader?.loadMedia(
                 player = player,
                 context = appContext,
-                videoStream = videoStream,
+                videoStream = if (effectiveAudioOnly) null else videoStream,
                 audioStream = audioStream ?: availableAudioStreams.firstOrNull(),
-                availableVideoStreams = availableVideoStreams,
-                currentVideoStream = currentVideoStream,
+                availableVideoStreams = if (effectiveAudioOnly) emptyList() else availableVideoStreams,
+                currentVideoStream = if (effectiveAudioOnly) null else currentVideoStream,
                 dashManifestUrl = null,
                 hlsUrl = null,
                 durationSeconds = currentDurationSeconds,
                 currentDurationSeconds = currentDurationSeconds,
                 preservePosition = preservePosition,
                 localFilePath = localFilePath,
-                audioOnly = false,
+                audioOnly = effectiveAudioOnly,
                 subtitleStreams = availableSubtitles
             ) ?: false
         }
 
         val audio = audioStream ?: availableAudioStreams.firstOrNull()
         val sabr = currentSabrInfo
-        if (audioOnly && audio == null) {
+        if (effectiveAudioOnly && audio == null) {
             Log.w(TAG, "loadMediaInternal: audio-only load requested without an audio stream")
             return false
         }
@@ -745,19 +757,19 @@ class EnhancedPlayerManager private constructor() {
         val result = mediaLoader?.loadMedia(
             player = player,
             context = appContext,
-            videoStream = videoStream,
+            videoStream = if (effectiveAudioOnly) null else videoStream,
             audioStream = audio,
-            availableVideoStreams = availableVideoStreams,
-            currentVideoStream = currentVideoStream,
-            dashManifestUrl = currentDashManifestUrl,
-            hlsUrl = currentHlsUrl,
+            availableVideoStreams = if (effectiveAudioOnly) emptyList() else availableVideoStreams,
+            currentVideoStream = if (effectiveAudioOnly) null else currentVideoStream,
+            dashManifestUrl = if (effectiveAudioOnly) null else currentDashManifestUrl,
+            hlsUrl = if (effectiveAudioOnly) null else currentHlsUrl,
             durationSeconds = currentDurationSeconds,
             currentDurationSeconds = currentDurationSeconds,
             preservePosition = preservePosition,
             localFilePath = localFilePath,
-            audioOnly = audioOnly,
+            audioOnly = effectiveAudioOnly,
             subtitleStreams = availableSubtitles,
-            sabrStreamingUrl = sabr?.streamingUrl,
+            sabrStreamingUrl = if (effectiveAudioOnly) null else sabr?.streamingUrl,
             sabrVideoId = currentVideoId,
             sabrAudioItag = sabr?.audioItag ?: 0,
             sabrAudioLmt = sabr?.audioLmt ?: 0,
@@ -766,8 +778,8 @@ class EnhancedPlayerManager private constructor() {
             sabrPoToken = sabr?.poToken.orEmpty(),
             sabrVisitorId = sabr?.visitorId.orEmpty(),
             sabrUstreamerConfig = sabr?.ustreamerConfig ?: ByteArray(0),
-            forceSabrPlayback = forceSabrPlayback,
-            innerTubeVideoFormats = innerTubeVideoFormats,
+            forceSabrPlayback = if (effectiveAudioOnly) false else forceSabrPlayback,
+            innerTubeVideoFormats = if (effectiveAudioOnly) emptyList() else innerTubeVideoFormats,
             innerTubeAudioFormats = innerTubeAudioFormats
         ) ?: false
         if (result) {
@@ -1315,9 +1327,9 @@ class EnhancedPlayerManager private constructor() {
     fun stop() {
         autoplayJob?.cancel()
         autoplayJob = null
-        isAudioOnlyMode = false
+        isAudioOnlyMode = KosherMode.ENABLED
         pendingInitialLiveEdgeSeek = false
-        setVideoTracksDisabled(false)
+        setVideoTracksDisabled(KosherMode.ENABLED)
         updateLivePlaybackMode(isLive = false)
         playbackTracker?.stop()
         player?.stop()
@@ -1357,7 +1369,7 @@ class EnhancedPlayerManager private constructor() {
             currentAudioStream = availableAudioStreams[index]
             val position = player?.currentPosition ?: 0L
             val wasPlaying = player?.isPlaying ?: false
-            if (isAudioOnlyMode) {
+            if (KosherMode.ENABLED || isAudioOnlyMode) {
                 loadMediaInternal(null, currentAudioStream, audioOnly = true)
             } else {
                 loadMediaInternal(currentVideoStream, currentAudioStream)
@@ -1465,6 +1477,10 @@ class EnhancedPlayerManager private constructor() {
     // ===== Surface Management =====
 
     fun attachVideoSurface(holder: SurfaceHolder?, forceAttach: Boolean = false): Boolean? {
+        if (KosherMode.ENABLED) {
+            setVideoTracksDisabled(true)
+            return false
+        }
         val attached = surfaceManager?.attachVideoSurface(holder, player, forceAttach)
         if (attached == true) {
             val p = player
@@ -1508,6 +1524,10 @@ class EnhancedPlayerManager private constructor() {
     }
 
     fun restoreVideoOutput() {
+        if (KosherMode.ENABLED) {
+            switchToAudioOnly()
+            return
+        }
         val p = player ?: return
         isAudioOnlyMode = false
         setVideoTracksDisabled(false)
@@ -1526,6 +1546,10 @@ class EnhancedPlayerManager private constructor() {
     
     fun setSurfaceReady(ready: Boolean) {
         surfaceManager?.setSurfaceReady(ready)
+        if (KosherMode.ENABLED) {
+            setVideoTracksDisabled(true)
+            return
+        }
         if (ready) {
             val p = player
             if (p != null && currentVideoStream != null) {
@@ -1545,6 +1569,10 @@ class EnhancedPlayerManager private constructor() {
     }
     
     fun retryLoadMediaIfSurfaceReady() {
+        if (KosherMode.ENABLED) {
+            loadMediaInternal(null, currentAudioStream ?: availableAudioStreams.firstOrNull(), audioOnly = true)
+            return
+        }
         if (isSurfaceReady && currentVideoStream != null) {
             loadMediaInternal(currentVideoStream, currentAudioStream)
         }
@@ -1589,8 +1617,8 @@ class EnhancedPlayerManager private constructor() {
     // ===== Clear & Release =====
 
     fun clearCurrentVideo() {
-        isAudioOnlyMode = false
-        setVideoTracksDisabled(false)
+        isAudioOnlyMode = KosherMode.ENABLED
+        setVideoTracksDisabled(KosherMode.ENABLED)
         updateLivePlaybackMode(isLive = false)
         mediaLoader?.releaseSabr()
         player?.stop()
@@ -1719,7 +1747,11 @@ class EnhancedPlayerManager private constructor() {
                     }
                 }
 
-                currentVideoStream?.let { loadMediaInternal(it, currentAudioStream, pos) }
+                if (KosherMode.ENABLED) {
+                    loadMediaInternal(null, currentAudioStream ?: availableAudioStreams.firstOrNull(), pos, audioOnly = true)
+                } else {
+                    currentVideoStream?.let { loadMediaInternal(it, currentAudioStream, pos) }
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error reloading", e)
                 onPlaybackShutdown()
@@ -1733,7 +1765,11 @@ class EnhancedPlayerManager private constructor() {
         val newStream = qualityManager?.attemptQualityDowngrade()
         if (newStream != null) {
             currentVideoStream = newStream
-            loadMediaInternal(newStream, currentAudioStream)
+            if (KosherMode.ENABLED) {
+                loadMediaInternal(null, currentAudioStream ?: availableAudioStreams.firstOrNull(), audioOnly = true)
+            } else {
+                loadMediaInternal(newStream, currentAudioStream)
+            }
         } else {
             _playerState.value = _playerState.value.copy(
                 error = "Unable to play - all quality options failed", isPlaying = false, isBuffering = false

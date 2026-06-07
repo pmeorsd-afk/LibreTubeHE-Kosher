@@ -24,6 +24,7 @@ import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.data.repository.SponsorBlockRepository
 import io.github.aedev.flow.data.video.DownloadProgressUpdate
 import io.github.aedev.flow.data.video.VideoDownloadManager
+import io.github.aedev.flow.utils.KosherMode
 import io.github.aedev.flow.player.sabr.integration.SabrDownloadEngine
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -307,7 +308,13 @@ class FlowDownloadService : Service() {
     ) {
         try {
             Log.d(TAG, "handleStartDownload: Checking directories...")
-            val fileType = if (audioOnly) DownloadFileType.AUDIO else DownloadFileType.VIDEO
+            val effectiveAudioOnly = KosherMode.ENABLED || audioOnly
+            if (KosherMode.ENABLED && !audioOnly && audioUrl == null) {
+                Log.w(TAG, "handleStartDownload: refusing video download in kosher mode for $videoId")
+                return
+            }
+
+            val fileType = if (effectiveAudioOnly) DownloadFileType.AUDIO else DownloadFileType.VIDEO
             val codecHint = videoCodec?.trim()?.lowercase()
             val isWebMCodec = codecHint?.let {
                 it == "vp9" || it == "vp8" || it.startsWith("vp09") || it.startsWith("vp08")
@@ -325,7 +332,7 @@ class FlowDownloadService : Service() {
                 ?.takeIf { it.isNotBlank() }
                 ?: "audio/mp4"
             val extension = when {
-                audioOnly  -> normalizedAudioExtension
+                effectiveAudioOnly -> normalizedAudioExtension
                 isWebMCodec -> "webm"
                 av1NeedsMkv -> "mkv"
                 else -> "mp4"
@@ -353,8 +360,8 @@ class FlowDownloadService : Service() {
                 isMusic = isMusic
             )
 
-            val effectiveUrl = if (audioOnly && audioUrl != null) audioUrl else url
-            val effectiveAudioUrl = if (audioOnly) null else audioUrl
+            val effectiveUrl = if (effectiveAudioOnly && audioUrl != null) audioUrl else url
+            val effectiveAudioUrl = if (effectiveAudioOnly) null else audioUrl
 
             val threadCount = kotlinx.coroutines.runBlocking(Dispatchers.IO) {
                 preferences.downloadThreads.firstOrNull() ?: 3
@@ -411,7 +418,7 @@ class FlowDownloadService : Service() {
                 try {
                     val items = mutableListOf<DownloadItemEntity>()
 
-                    if (audioOnly) {
+                    if (effectiveAudioOnly) {
                         items.add(DownloadItemEntity(
                             videoId = videoId, fileType = DownloadFileType.AUDIO,
                             fileName = fileName, filePath = savePath,
@@ -453,7 +460,7 @@ class FlowDownloadService : Service() {
                     if (isSabrDownload) {
                         Log.d(TAG, "Executing SABR download...")
                         executeSabrDownload(
-                            mission, videoId, audioOnly, normalizedAudioMimeType,
+                            mission, videoId, effectiveAudioOnly, normalizedAudioMimeType,
                             sabrStreamingUrl = sabrStreamingUrl!!,
                             sabrAudioItag = sabrAudioItag,
                             sabrAudioLmt = sabrAudioLmt,
@@ -465,7 +472,7 @@ class FlowDownloadService : Service() {
                         )
                     } else {
                         Log.d(TAG, "Executing download...")
-                        executeDownload(mission, videoId, audioOnly, normalizedAudioMimeType)
+                        executeDownload(mission, videoId, effectiveAudioOnly, normalizedAudioMimeType)
                     }
                 } catch (e: Exception) {
                     if (e is kotlinx.coroutines.CancellationException) throw e

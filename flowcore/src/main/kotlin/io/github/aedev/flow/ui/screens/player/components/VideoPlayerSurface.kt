@@ -30,6 +30,8 @@ import androidx.media3.ui.PlayerView
 import io.github.aedev.flow.R
 import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.player.EnhancedPlayerManager
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 private fun pickPlayerViewLayoutRes(): Int =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -53,6 +55,15 @@ fun VideoPlayerSurface(
     var surfaceRestoreTrigger by remember { mutableIntStateOf(0) }
     var attachedVideoId by remember { mutableStateOf<String?>(null) }
     val cornerRadiusPx = with(density) { cornerRadiusDp.dp.toPx() }
+
+    if (KosherMode.ENABLED) {
+        DisposableEffect(video.id) {
+            EnhancedPlayerManager.getInstance().switchToAudioOnly()
+            onDispose { }
+        }
+        KosherPlaceholder(modifier = modifier)
+        return
+    }
 
     val playerView = remember(video.id) {
         Log.d("EnhancedVideoPlayer", "Creating shared PlayerView (sdk=${Build.VERSION.SDK_INT})")

@@ -24,6 +24,8 @@ import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Precision
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun PlayerArtwork(
@@ -68,7 +70,9 @@ fun PlayerArtwork(
                 )
             }
     ) {
-        if (isVideoMode) {
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(modifier = Modifier.fillMaxSize())
+        } else if (isVideoMode) {
              AndroidView(
                 factory = { context ->
                     PlayerView(context).apply {

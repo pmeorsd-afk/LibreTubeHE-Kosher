@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.widget.Toast
 import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.player.stream.VideoCodecUtils
+import io.github.aedev.flow.utils.KosherMode
 import org.schabi.newpipe.extractor.stream.VideoStream
 
 object VideoPlayerUtils {
@@ -90,14 +91,28 @@ object VideoPlayerUtils {
             promptStoragePermissionIfNeeded(context)
 
             // Start the optimized parallel download service
-            io.github.aedev.flow.data.video.downloader.FlowDownloadService.startDownload(
-                context, 
-                video, 
-                url, 
-                qualityLabel,
-                audioUrl,
-                videoCodec = videoCodec
-            )
+            if (KosherMode.ENABLED) {
+                val audioOnlyUrl = audioUrl ?: run {
+                    Toast.makeText(context, "Audio stream is required for kosher downloads", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                io.github.aedev.flow.data.video.downloader.FlowDownloadService.startDownload(
+                    context = context,
+                    video = video,
+                    url = audioOnlyUrl,
+                    quality = qualityLabel,
+                    audioOnly = true
+                )
+            } else {
+                io.github.aedev.flow.data.video.downloader.FlowDownloadService.startDownload(
+                    context,
+                    video,
+                    url,
+                    qualityLabel,
+                    audioUrl,
+                    videoCodec = videoCodec
+                )
+            }
             
             Toast.makeText(context, "Started download: ${video.title}", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {

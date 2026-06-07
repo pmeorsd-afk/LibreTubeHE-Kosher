@@ -37,6 +37,7 @@ import com.github.libretube.extensions.toastFromMainThread
 import com.github.libretube.extensions.updateParameters
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.PlayerHelper.getCurrentSegment
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.ui.activities.MainActivity
 import com.github.libretube.util.DefaultTrackSelectorWithAudioQualitySupport
 import com.github.libretube.util.NowPlayingNotification
@@ -154,7 +155,7 @@ abstract class AbstractPlayerService : MediaLibraryService(), MediaLibrarySessio
             args.containsKey(PlayerCommand.SET_VIDEO_TRACK_TYPE_DISABLED.name) -> trackSelector?.updateParameters {
                 setTrackTypeDisabled(
                     C.TRACK_TYPE_VIDEO,
-                    args.getBoolean(PlayerCommand.SET_VIDEO_TRACK_TYPE_DISABLED.name)
+                    KosherMode.ENABLED || args.getBoolean(PlayerCommand.SET_VIDEO_TRACK_TYPE_DISABLED.name)
                 )
             }
 
@@ -201,9 +202,9 @@ abstract class AbstractPlayerService : MediaLibraryService(), MediaLibrarySessio
             }
 
             args.containsKey(PlayerCommand.TOGGLE_AUDIO_ONLY_MODE.name) -> {
-                isAudioOnlyPlayer = args.getBoolean(PlayerCommand.TOGGLE_AUDIO_ONLY_MODE.name)
+                isAudioOnlyPlayer = KosherMode.ENABLED || args.getBoolean(PlayerCommand.TOGGLE_AUDIO_ONLY_MODE.name)
                 trackSelector?.updateParameters {
-                    setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, isAudioOnlyPlayer)
+                    setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, true)
                 }
                 updateNotification()
             }

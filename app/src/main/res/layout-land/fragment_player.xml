@@ -71,6 +71,7 @@
                         android:id="@+id/relPlayer_external_player"
                         style="@style/PlayerActionsButton"
                         android:text="@string/external_player"
+                        android:visibility="gone"
                         app:icon="@drawable/ic_video" />
 
                     <com.google.android.material.button.MaterialButton
@@ -214,7 +215,7 @@
         app:layout_constraintStart_toStartOf="@id/main_container"
         app:layout_constraintTop_toTopOf="@id/main_container"
         app:show_buffering="when_playing"
-        app:surface_type="surface_view" />
+        app:surface_type="none" />
 
     <ImageView
         android:id="@+id/close_imageView"

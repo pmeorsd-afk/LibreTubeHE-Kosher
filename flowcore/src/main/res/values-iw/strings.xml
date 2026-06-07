@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Flow</string>
+    <string name="kosher_version">גרסה כשרה</string>
+    <string name="kosher_audio_only_notice">השמעת אודיו בלבד</string>
     <string name="app_name_uppercase">FLOW</string>
 
     <!-- Navigation -->

@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.github.aedev.flow.data.local.MusicPlayerBackgroundStyle
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun PlayerBackground(
@@ -26,6 +27,21 @@ fun PlayerBackground(
     paletteAccentColor: Color,
     modifier: Modifier = Modifier
 ) {
+    if (KosherMode.ENABLED) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.00f to Color(0xFF101014),
+                        0.55f to Color(0xFF2A2236),
+                        1.00f to Color.Black
+                    )
+                )
+        )
+        return
+    }
+
     val baseColor = paletteBaseColor.copy(alpha = 0.78f)
     val accentColor = paletteAccentColor.copy(alpha = 0.72f)
 

@@ -25,6 +25,7 @@ import com.github.libretube.extensions.setMetadata
 import com.github.libretube.extensions.toAndroidUri
 import com.github.libretube.extensions.updateParameters
 import com.github.libretube.helpers.FlowHistoryBridge
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.ui.activities.MainActivity
@@ -77,7 +78,7 @@ open class OfflinePlayerService : AbstractPlayerService() {
 
         playerData = args.parcelable(IntentData.playerData)!!
         noInternetService = args.getBoolean(IntentData.noInternet, false)
-        isAudioOnlyPlayer = args.getBoolean(IntentData.audioOnly, false)
+        isAudioOnlyPlayer = KosherMode.ENABLED || args.getBoolean(IntentData.audioOnly, false)
 
         PlayingQueue.clear()
 
@@ -97,7 +98,7 @@ open class OfflinePlayerService : AbstractPlayerService() {
 
         exoPlayer?.addListener(playerListener)
         trackSelector?.updateParameters {
-            setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, isAudioOnlyPlayer)
+            setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, true)
         }
 
         fillQueue()
@@ -181,7 +182,12 @@ open class OfflinePlayerService : AbstractPlayerService() {
         }
 
         var mediaSource: MediaSource? = null
-        listOfNotNull(videoSource, audioSource, subtitleSource).forEach { source ->
+        val sources = if (KosherMode.ENABLED) {
+            listOfNotNull(audioSource, subtitleSource)
+        } else {
+            listOfNotNull(videoSource, audioSource, subtitleSource)
+        }
+        sources.forEach { source ->
             mediaSource =
                 if (mediaSource == null) source else MergingMediaSource(mediaSource!!, source)
         }

@@ -35,6 +35,7 @@ import io.github.aedev.flow.R
 import coil.compose.AsyncImage
 import io.github.aedev.flow.player.EnhancedMusicPlayerManager
 import io.github.aedev.flow.ui.screens.music.MusicTrack
+import io.github.aedev.flow.utils.KosherMode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -132,15 +133,17 @@ fun PersistentMiniMusicPlayer(
                     color = MaterialTheme.colorScheme.surface
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        AsyncImage(
-                            model = track.highResThumbnailUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .blur(40.dp),
-                            contentScale = ContentScale.Crop,
-                            alpha = 0.25f
-                        )
+                        if (!KosherMode.ENABLED) {
+                            AsyncImage(
+                                model = track.highResThumbnailUrl,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .blur(40.dp),
+                                contentScale = ContentScale.Crop,
+                                alpha = 0.25f
+                            )
+                        }
 
                         Box(
                             modifier = Modifier
@@ -188,14 +191,23 @@ fun PersistentMiniMusicPlayer(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                 ) {
-                                    AsyncImage(
-                                        model = track.highResThumbnailUrl,
-                                        contentDescription = stringResource(R.string.album_art),
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
+                                    if (KosherMode.ENABLED) {
+                                        KosherPlaceholder(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(12.dp)),
+                                            showSubtitle = false
+                                        )
+                                    } else {
+                                        AsyncImage(
+                                            model = track.highResThumbnailUrl,
+                                            contentDescription = stringResource(R.string.album_art),
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(12.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
                                     
                                     Box(
                                         modifier = Modifier

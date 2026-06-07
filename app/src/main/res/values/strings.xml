@@ -53,6 +53,8 @@
     <string name="about">About</string>
     <string name="rebuilt_by_notice">This app was rebuilt by - אפליקציות פרוצות לאייפון</string>
     <string name="telegram_channel">Telegram channel</string>
+    <string name="kosher_version">Kosher version</string>
+    <string name="kosher_audio_only_notice">Audio only playback</string>
     <string name="changeLanguage">Language</string>
     <string name="systemLanguage">System</string>
     <string name="systemDefault">System</string>

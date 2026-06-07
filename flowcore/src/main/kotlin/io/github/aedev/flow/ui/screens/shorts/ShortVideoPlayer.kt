@@ -53,7 +53,9 @@ import android.support.v4.media.session.PlaybackStateCompat
 import io.github.aedev.flow.player.EnhancedMusicPlayerManager
 import io.github.aedev.flow.player.shorts.ShortsPlayerPool
 import io.github.aedev.flow.ui.components.ChannelAvatarImage
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.components.rememberFlowSheetState
+import io.github.aedev.flow.utils.KosherMode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -128,15 +130,19 @@ fun ShortVideoPage(
 
     // ── PlayerView instance ──
     val playerView = remember {
-        PlayerView(context).apply {
-            useController = false
-            layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
-            setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
-            keepScreenOn = true
+        if (KosherMode.ENABLED) {
+            null
+        } else {
+            PlayerView(context).apply {
+                useController = false
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+                setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
+                keepScreenOn = true
+            }
         }
     }
 
@@ -174,13 +180,13 @@ fun ShortVideoPage(
             EnhancedMusicPlayerManager.pause()
 
             val player = playerPool.getPlayerForIndex(pageIndex)
-            playerView.player = player
+            playerView?.player = player
 
             if (player != null && player.isPlaying) {
                 hasStartedPlaying = true
             }
         } else {
-            playerView.player = null
+            playerView?.player = null
         }
     }
 
@@ -348,14 +354,18 @@ fun ShortVideoPage(
                 )
             }
     ) {
-        AndroidView(
-            factory = { playerView },
-            modifier = Modifier.fillMaxSize()
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(modifier = Modifier.fillMaxSize())
+        } else {
+            AndroidView(
+                factory = { playerView!! },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         // ── Thumbnail placeholder until video starts ──
         AnimatedVisibility(
-            visible = !hasStartedPlaying && !isBuffering,
+            visible = !KosherMode.ENABLED && !hasStartedPlaying && !isBuffering,
             enter = fadeIn(),
             exit = fadeOut(animationSpec = tween(300))
         ) {

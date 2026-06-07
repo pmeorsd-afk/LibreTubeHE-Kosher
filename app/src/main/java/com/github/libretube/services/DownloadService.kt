@@ -43,6 +43,7 @@ import com.github.libretube.extensions.toastFromMainThread
 import com.github.libretube.helpers.DownloadHelper
 import com.github.libretube.helpers.DownloadHelper.getNotificationId
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NetworkHelper
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.ProxyHelper
@@ -448,6 +449,8 @@ class DownloadService : LifecycleService() {
      * for the requested file.
      */
     private fun start(item: DownloadItem) {
+        if (KosherMode.ENABLED && item.type == FileType.VIDEO) return
+
         item.path = when (item.type) {
             FileType.AUDIO -> getDownloadPath(DownloadHelper.AUDIO_DIR, item.fileName)
             FileType.VIDEO -> getDownloadPath(DownloadHelper.VIDEO_DIR, item.fileName)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.fragment.app.DialogFragment
 import com.github.libretube.R
 import com.github.libretube.constants.IntentData
@@ -13,6 +14,7 @@ import com.github.libretube.enums.PlaylistType
 import com.github.libretube.extensions.getWhileDigit
 import com.github.libretube.extensions.serializable
 import com.github.libretube.helpers.LocaleHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PreferenceHelper
 import com.github.libretube.services.PlaylistDownloadEnqueueService
 import com.github.libretube.util.TextUtils
@@ -53,14 +55,25 @@ class DownloadPlaylistDialog : DialogFragment() {
             listOf(getString(R.string.default_language)) + availableLanguages.map { it.name }
 
         restoreSelections(binding)
+        if (KosherMode.ENABLED) {
+            binding.videoSpinner.isGone = true
+            binding.videoSpinner.selectedItemPosition = 0
+            if (binding.audioSpinner.selectedItemPosition == 0 && possibleAudioQualities.isNotEmpty()) {
+                binding.audioSpinner.selectedItemPosition = 1
+            }
+        }
 
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.download_playlist))
             .setView(binding.root)
             .setPositiveButton(R.string.download) { _, _ ->
                 with(binding) {
-                    val maxVideoQuality = possibleVideoQualities.getOrNull(videoSpinner.selectedItemPosition - 1)
-                        .getWhileDigit()
+                    val maxVideoQuality = if (KosherMode.ENABLED) {
+                        null
+                    } else {
+                        possibleVideoQualities.getOrNull(videoSpinner.selectedItemPosition - 1)
+                            .getWhileDigit()
+                    }
                     val maxAudioQuality = possibleAudioQualities.getOrNull(audioSpinner.selectedItemPosition - 1)
                         .getWhileDigit()
                     val captionLanguage = availableLanguages.getOrNull(subtitleSpinner.selectedItemPosition - 1)?.code

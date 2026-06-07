@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.github.libretube.db.obj.DownloadItem
 import com.github.libretube.enums.FileType
 import com.github.libretube.extensions.toLocalDate
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.json.SafeInstantSerializer
 import com.github.libretube.parcelable.DownloadData
 import kotlinx.datetime.Instant
@@ -58,7 +59,7 @@ data class Streams(
         val (id, videoFormat, videoQuality, audioFormat, audioQuality, audioTrackLocale, subCode) = downloadData
         val items = mutableListOf<DownloadItem>()
 
-        if (!videoQuality.isNullOrEmpty() && !videoFormat.isNullOrEmpty()) {
+        if (!KosherMode.ENABLED && !videoQuality.isNullOrEmpty() && !videoFormat.isNullOrEmpty()) {
             val stream = videoStreams.find {
                 it.quality == videoQuality && it.format == videoFormat
             }

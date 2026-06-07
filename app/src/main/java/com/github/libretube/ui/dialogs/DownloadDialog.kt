@@ -24,6 +24,7 @@ import com.github.libretube.extensions.getWhileDigit
 import com.github.libretube.extensions.sha256Sum
 import com.github.libretube.extensions.toastFromMainDispatcher
 import com.github.libretube.helpers.DownloadHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.PreferenceHelper
 import com.github.libretube.parcelable.DownloadData
@@ -123,9 +124,16 @@ class DownloadDialog : DialogFragment() {
         }
 
         restorePreviousSelections(binding, videoStreams, audioStreams, subtitles)
+        if (KosherMode.ENABLED) {
+            binding.videoSpinner.isGone = true
+            binding.videoSpinner.selectedItemPosition = 0
+            if (audioStreams.isNotEmpty() && binding.audioSpinner.selectedItemPosition == 0) {
+                binding.audioSpinner.selectedItemPosition = 1
+            }
+        }
 
         onDownloadConfirm = onDownloadConfirm@{
-            val videoPosition = binding.videoSpinner.selectedItemPosition - 1
+            val videoPosition = if (KosherMode.ENABLED) -1 else binding.videoSpinner.selectedItemPosition - 1
             val audioPosition = binding.audioSpinner.selectedItemPosition - 1
             val subtitlePosition = binding.subtitleSpinner.selectedItemPosition - 1
 
@@ -134,7 +142,7 @@ class DownloadDialog : DialogFragment() {
                 return@onDownloadConfirm
             }
 
-            val videoStream = videoStreams.getOrNull(videoPosition)
+            val videoStream = if (KosherMode.ENABLED) null else videoStreams.getOrNull(videoPosition)
             val audioStream = audioStreams.getOrNull(audioPosition)
             val subtitle = subtitles.getOrNull(subtitlePosition)
 

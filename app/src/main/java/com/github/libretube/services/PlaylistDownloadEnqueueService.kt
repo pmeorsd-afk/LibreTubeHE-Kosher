@@ -28,6 +28,7 @@ import com.github.libretube.extensions.toID
 import com.github.libretube.extensions.toastFromMainDispatcher
 import com.github.libretube.helpers.DownloadHelper
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.parcelable.DownloadData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -188,7 +189,7 @@ class PlaylistDownloadEnqueueService : LifecycleService() {
                 }.getOrNull()
 
                 if (videoInfo != null) {
-                    val videoStream = getStream(videoInfo.videoStreams, maxVideoQuality)
+                    val videoStream = if (KosherMode.ENABLED) null else getStream(videoInfo.videoStreams, maxVideoQuality)
                     val audioStream = getStream(videoInfo.audioStreams, maxAudioQuality)
 
                     val downloadData = DownloadData(

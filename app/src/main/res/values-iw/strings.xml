@@ -30,6 +30,8 @@
     <string name="rebuilt_by_notice">אפליקציה זו בונתה מחדש
 על ידי - אפליקציות פרוצות לאייפון</string>
     <string name="telegram_channel">אפליקציות פרוצות לאייפון</string>
+    <string name="kosher_version">גרסה כשרה</string>
+    <string name="kosher_audio_only_notice">השמעת אודיו בלבד</string>
     <string name="lightTheme">בהיר</string>
     <string name="subscribers">%1$s מנויים</string>
     <string name="comments">תגובות</string>

@@ -72,6 +72,8 @@ object DownloadHelper {
     fun startDownloadDialog(context: Context, fragmentManager: FragmentManager, videoId: String) {
         val externalProviderPackageName =
             PreferenceHelper.getString(PreferenceKeys.EXTERNAL_DOWNLOAD_PROVIDER, "")
+                .takeUnless { KosherMode.ENABLED }
+                .orEmpty()
 
         if (externalProviderPackageName.isBlank()) {
             DownloadDialog().apply {
@@ -98,6 +100,8 @@ object DownloadHelper {
     ) {
         val externalProviderPackageName =
             PreferenceHelper.getString(PreferenceKeys.EXTERNAL_DOWNLOAD_PROVIDER, "")
+                .takeUnless { KosherMode.ENABLED }
+                .orEmpty()
 
         if (externalProviderPackageName.isBlank()) {
             val downloadPlaylistDialog = DownloadPlaylistDialog().apply {

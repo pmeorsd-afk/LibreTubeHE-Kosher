@@ -73,6 +73,7 @@ import com.github.libretube.extensions.updateIfChanged
 import com.github.libretube.helpers.BackgroundHelper
 import com.github.libretube.helpers.DownloadHelper
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.PlayerHelper.getCurrentSegment
@@ -714,7 +715,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
             switchToAudioMode()
         }
 
-        binding.relPlayerPip.isVisible =
+        binding.relPlayerPip.isVisible = !KosherMode.ENABLED &&
             PictureInPictureCompat.isPictureInPictureAvailable(requireContext())
 
         binding.relPlayerPip.setOnClickListener {
@@ -755,6 +756,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
         }
 
         binding.relPlayerScreenshot.setOnClickListener {
+            if (KosherMode.ENABLED) return@setOnClickListener
             if (!this::streams.isInitialized) return@setOnClickListener
             val surfaceView =
                 binding.player.videoSurfaceView as? SurfaceView ?: return@setOnClickListener
@@ -1282,6 +1284,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
     }
 
     private suspend fun getTimeFrameReceiver(): TimeFrameReceiver? = withContext(Dispatchers.IO) {
+        if (KosherMode.ENABLED) return@withContext null
         return@withContext if (isOffline) {
             val downloadItems =
                 DatabaseHolder.Database.downloadDao().getDownloadById(videoId)?.downloadItems
@@ -1393,6 +1396,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
      * Detect whether PiP is supported and enabled
      */
     private fun shouldUsePip(): Boolean {
+        if (KosherMode.ENABLED) return false
         return PictureInPictureCompat.isPictureInPictureAvailable(requireContext()) && PlayerHelper.pipEnabled
     }
 

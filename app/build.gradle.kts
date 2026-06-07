@@ -31,13 +31,13 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.github.libretube"
+        applicationId = "com.github.libretube.kosher"
         minSdk = 26
         targetSdk = 36
         versionCode = 70
         versionName = "31.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        resValue("string", "app_name", "LibreTube")
+        resValue("string", "app_name", "LibreTubeHE Kosher")
     }
 
     ksp {
@@ -74,7 +74,7 @@ android {
         getByName("debug") {
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "LibreTube Debug")
+            resValue("string", "app_name", "LibreTubeHE Kosher Debug")
         }
     }
 

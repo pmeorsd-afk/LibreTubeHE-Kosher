@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.upstream.DefaultAllocator
 import io.github.aedev.flow.data.local.PlayerPreferences
 import io.github.aedev.flow.player.config.PlayerConfig
 import io.github.aedev.flow.player.datasource.YouTubeHttpDataSource
+import io.github.aedev.flow.utils.KosherMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -167,6 +168,7 @@ class ShortsPlayerPool private constructor() {
                 .setForceHighestSupportedBitrate(false)
                 .setViewportSizeToPhysicalDisplaySize(context, true)
                 .setMaxVideoSize(1080, 1920)
+                .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, KosherMode.ENABLED)
             
             if (preferredAudioLanguage != "original" && preferredAudioLanguage.isNotEmpty()) {
                 builder.setPreferredAudioLanguage(preferredAudioLanguage)
@@ -374,6 +376,15 @@ class ShortsPlayerPool private constructor() {
 
     private fun preparePlayerInternal(player: ExoPlayer, videoUrl: String, audioUrl: String?) {
         val factory = dataSourceFactory ?: return
+
+        if (KosherMode.ENABLED && audioUrl != null) {
+            player.setMediaSource(
+                ProgressiveMediaSource.Factory(factory)
+                    .createMediaSource(MediaItem.fromUri(audioUrl))
+            )
+            player.prepare()
+            return
+        }
 
         if (audioUrl != null && audioUrl != videoUrl) {
             val videoSource = ProgressiveMediaSource.Factory(factory)

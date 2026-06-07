@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Flow</string>
+    <string name="kosher_version">Kosher version</string>
+    <string name="kosher_audio_only_notice">Audio only playback</string>
     <string name="subscriptions_search_placeholder">Search subscriptions...</string>
     <string name="top_bar_subscriptions_title">Subscriptions</string>
     <string name="view_all_button_label">All</string>
