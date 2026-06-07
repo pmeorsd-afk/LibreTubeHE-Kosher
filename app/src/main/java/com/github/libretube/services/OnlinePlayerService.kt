@@ -227,6 +227,28 @@ open class OnlinePlayerService : AbstractPlayerService() {
         val streams = streams ?: return
 
         when {
+            KosherMode.ENABLED && streams.isLive && streams.hls != null -> {
+                val hlsMediaSourceFactory = HlsMediaSource.Factory(DefaultDataSource.Factory(this))
+                    .setPlaylistParserFactory(YoutubeHlsPlaylistParser.Factory())
+
+                val mediaItem = createMediaItem(
+                    ProxyHelper.rewriteUrlUsingProxyPreference(streams.hls).toUri(),
+                    MimeTypes.APPLICATION_M3U8,
+                    streams
+                )
+                val mediaSource = hlsMediaSourceFactory.createMediaSource(mediaItem)
+
+                exoPlayer?.setMediaSource(mediaSource)
+                return
+            }
+            KosherMode.ENABLED && streams.isLive && streams.dash != null -> {
+                val mediaItem = createMediaItem(
+                    ProxyHelper.rewriteUrlUsingProxyPreference(streams.dash).toUri(),
+                    MimeTypes.APPLICATION_MPD,
+                    streams
+                )
+                exoPlayer?.setMediaItem(mediaItem)
+            }
             KosherMode.ENABLED && streams.audioStreams.isNotEmpty() -> {
                 val audioOnlyStreams = streams.copy(videoStreams = emptyList(), hls = null, dash = null)
                 val dashUri = PlayerHelper.createDashSource(audioOnlyStreams, this)

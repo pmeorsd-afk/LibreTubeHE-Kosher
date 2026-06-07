@@ -2,7 +2,15 @@ package com.github.libretube.helpers
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.Shader
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.core.net.toUri
@@ -97,7 +105,7 @@ object ImageHelper {
         if (url.isNullOrEmpty()) return
 
         if (KosherMode.ENABLED && !whiteBackground) {
-            target.setImageResource(com.github.libretube.R.drawable.bg_kosher_placeholder)
+            target.setImageDrawable(KosherThumbnailDrawable(target.context))
             return
         }
 
@@ -156,4 +164,51 @@ object ImageHelper {
             newSize
         )
     }
+}
+
+private class KosherThumbnailDrawable(context: Context) : Drawable() {
+    private val label = context.getString(com.github.libretube.R.string.kosher_version)
+    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+    }
+
+    override fun draw(canvas: Canvas) {
+        val bounds = bounds
+        if (bounds.isEmpty) return
+
+        backgroundPaint.shader = LinearGradient(
+            bounds.left.toFloat(),
+            bounds.top.toFloat(),
+            bounds.right.toFloat(),
+            bounds.bottom.toFloat(),
+            intArrayOf(
+                Color.rgb(34, 27, 44),
+                Color.rgb(24, 20, 32)
+            ),
+            null,
+            Shader.TileMode.CLAMP
+        )
+        canvas.drawRect(bounds, backgroundPaint)
+
+        textPaint.textSize = (bounds.height() * 0.18f).coerceIn(22f, 44f)
+        val metrics = textPaint.fontMetrics
+        val y = bounds.centerY() - (metrics.ascent + metrics.descent) / 2f
+        canvas.drawText(label, bounds.centerX().toFloat(), y, textPaint)
+    }
+
+    override fun setAlpha(alpha: Int) {
+        backgroundPaint.alpha = alpha
+        textPaint.alpha = alpha
+    }
+
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        backgroundPaint.colorFilter = colorFilter
+        textPaint.colorFilter = colorFilter
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun getOpacity(): Int = PixelFormat.OPAQUE
 }
