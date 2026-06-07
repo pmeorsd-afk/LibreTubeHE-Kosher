@@ -31,6 +31,7 @@ import io.github.aedev.flow.innertube.models.AlbumItem
 import io.github.aedev.flow.innertube.models.ArtistItem
 import io.github.aedev.flow.innertube.models.PlaylistItem
 import io.github.aedev.flow.innertube.models.SongItem
+import io.github.aedev.flow.ui.components.ItemThumbnail
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import io.github.aedev.flow.R
@@ -258,14 +259,12 @@ fun ArtistGridItem(
             )
     ) {
         Box {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
+            ItemThumbnail(
+                thumbnailUrl = thumbnailUrl,
                 modifier = Modifier
                     .aspectRatio(1f)
-                    .fillMaxWidth()
-                    .clip(if (item is ArtistItem) androidx.compose.foundation.shape.CircleShape else RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+                    .fillMaxWidth(),
+                shape = if (item is ArtistItem) androidx.compose.foundation.shape.CircleShape else RoundedCornerShape(8.dp)
             )
             if (onActionClick != null) {
                 IconButton(

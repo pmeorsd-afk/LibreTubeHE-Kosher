@@ -49,6 +49,7 @@ import io.github.aedev.flow.ui.screens.channel.ChannelScreen
 import io.github.aedev.flow.ui.screens.onboarding.OnboardingScreen
 import io.github.aedev.flow.ui.theme.CustomThemeColors
 import io.github.aedev.flow.ui.theme.ThemeMode
+import io.github.aedev.flow.utils.KosherMode
 import androidx.media3.common.util.UnstableApi
 import java.net.URLEncoder
 
@@ -108,7 +109,7 @@ fun NavGraphBuilder.flowAppGraph(
         }
         HomeScreen(
             onVideoClick = { video ->
-                if (video.isShort && !disableShortsPlayer) {
+                if (video.isShort && !disableShortsPlayer && !KosherMode.ENABLED) {
                     navController.navigate("shorts?startVideoId=${video.id}")
                 } else {
                     playerViewModel.playVideo(video)
@@ -116,7 +117,7 @@ fun NavGraphBuilder.flowAppGraph(
                 }
             },
             onShortClick = { video ->
-                if (disableShortsPlayer) {
+                if (disableShortsPlayer || KosherMode.ENABLED) {
                     playerViewModel.playVideo(video)
                     GlobalPlayerState.setCurrentVideo(video)
                 } else {
@@ -165,15 +166,25 @@ fun NavGraphBuilder.flowAppGraph(
         showBottomNav.value = true
         selectedBottomNavIndex.intValue = 1
         val startVideoId = backStackEntry.arguments?.getString("startVideoId")
-        ShortsScreen(
-            startVideoId = startVideoId,
-            onBack = {
-                navController.popBackStack()
-            },
-            onChannelClick = { channelId ->
-                navController.navigate("channel?url=$channelId")
+        if (KosherMode.ENABLED) {
+            LaunchedEffect(Unit) {
+                navController.navigate("home") {
+                    popUpTo("home") { inclusive = false }
+                    launchSingleTop = true
+                }
             }
-        )
+            Box(modifier = Modifier.fillMaxSize())
+        } else {
+            ShortsScreen(
+                startVideoId = startVideoId,
+                onBack = {
+                    navController.popBackStack()
+                },
+                onChannelClick = { channelId ->
+                    navController.navigate("channel?url=$channelId")
+                }
+            )
+        }
     }
 
     composable("subscriptions") {
@@ -182,7 +193,7 @@ fun NavGraphBuilder.flowAppGraph(
         selectedBottomNavIndex.intValue = 3
         SubscriptionsScreen(
             onVideoClick = { video ->
-                if (video.isShort && !disableShortsPlayer) {
+                if (video.isShort && !disableShortsPlayer && !KosherMode.ENABLED) {
                     navController.navigate("shorts?startVideoId=${video.id}")
                 } else {
                     playerViewModel.playVideo(video)
@@ -190,7 +201,7 @@ fun NavGraphBuilder.flowAppGraph(
                 }
             },
             onShortClick = { videoId ->
-                if (disableShortsPlayer) {
+                if (disableShortsPlayer || KosherMode.ENABLED) {
                     navController.navigate("player/$videoId")
                 } else {
                     navController.navigate("shorts?startVideoId=$videoId")
@@ -651,16 +662,23 @@ fun NavGraphBuilder.flowAppGraph(
         currentRoute.value = "savedShortsPlayer"
         showBottomNav.value = false
         val startVideoId = backStackEntry.arguments?.getString("startVideoId")
-        ShortsScreen(
-            startVideoId = startVideoId,
-            isSavedMode = true,
-            onBack = {
+        if (KosherMode.ENABLED) {
+            LaunchedEffect(Unit) {
                 navController.popBackStack()
-            },
-            onChannelClick = { channelId ->
-                navController.navigate("channel?url=$channelId")
             }
-        )
+            Box(modifier = Modifier.fillMaxSize())
+        } else {
+            ShortsScreen(
+                startVideoId = startVideoId,
+                isSavedMode = true,
+                onBack = {
+                    navController.popBackStack()
+                },
+                onChannelClick = { channelId ->
+                    navController.navigate("channel?url=$channelId")
+                }
+            )
+        }
     }
     composable("downloads") {
         currentRoute.value = "downloads"

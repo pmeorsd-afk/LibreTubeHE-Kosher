@@ -96,6 +96,11 @@ object ImageHelper {
     fun loadImage(url: String?, target: ImageView, whiteBackground: Boolean = false) {
         if (url.isNullOrEmpty()) return
 
+        if (KosherMode.ENABLED && !whiteBackground) {
+            target.setImageResource(com.github.libretube.R.drawable.bg_kosher_placeholder)
+            return
+        }
+
         // clear image to avoid loading issues at fast scrolling
         target.setImageBitmap(null)
 

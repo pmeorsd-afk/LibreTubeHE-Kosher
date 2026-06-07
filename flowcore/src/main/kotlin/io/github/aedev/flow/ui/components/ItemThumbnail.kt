@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import io.github.aedev.flow.ui.theme.Dimensions
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun ItemThumbnail(
@@ -58,12 +59,20 @@ fun ItemThumbnail(
             .aspectRatio(thumbnailRatio)
             .clip(shape)
     ) {
-        AsyncImage(
-            model = thumbnailUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = thumbnailUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         
         if (isActive || isPlaying) {
             Box(
@@ -173,7 +182,13 @@ fun PlaylistThumbnail(
         shape = shape,
         modifier = modifier.size(size)
     ) {
-        when {
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                showSubtitle = false,
+                compact = true
+            )
+        } else when {
             thumbnails.isEmpty() -> {
                 Box(
                     modifier = Modifier

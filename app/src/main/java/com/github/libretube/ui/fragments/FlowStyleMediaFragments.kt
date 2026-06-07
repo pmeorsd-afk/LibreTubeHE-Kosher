@@ -69,9 +69,10 @@ import io.github.aedev.flow.ui.screens.music.MusicViewModel
 import io.github.aedev.flow.ui.screens.music.MusicSearchScreen
 import io.github.aedev.flow.ui.screens.music.PlaylistPage
 import io.github.aedev.flow.ui.screens.music.YouTubeBrowseScreen
-import io.github.aedev.flow.ui.screens.shorts.ShortsScreen
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.theme.FlowTheme
 import io.github.aedev.flow.ui.theme.ThemeMode
+import io.github.aedev.flow.utils.KosherMode
 
 abstract class FlowChromeFragment : Fragment() {
     private var appBar: View? = null
@@ -527,14 +528,24 @@ private fun MusicMiniPlayer(
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = track.thumbnailUrl.ifBlank { track.highResThumbnailUrl },
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = track.thumbnailUrl.ifBlank { track.highResThumbnailUrl },
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -587,12 +598,10 @@ class ShortsFragment : FlowChromeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             FlowTheme(themeMode = ThemeMode.DARK) {
-                ShortsScreen(
-                    onBack = { navigateHome() },
-                    onChannelClick = { channelId ->
-                        NavigationHelper.navigateChannel(requireContext(), channelId)
-                    }
-                )
+                LaunchedEffect(Unit) {
+                    navigateHome()
+                }
+                Box(modifier = Modifier.fillMaxSize())
             }
         }
     }

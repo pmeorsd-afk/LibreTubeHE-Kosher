@@ -190,24 +190,15 @@ fun YouTubeGridItem(
         subtitle = subtitle,
         badges = badges,
         thumbnailContent = {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            ItemThumbnail(
+                thumbnailUrl = thumbnailUrl,
+                shape = shape,
+                isActive = isActive,
+                isPlaying = isPlaying,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape)
             )
-            
-            if (isActive || isPlaying) {
-                ItemThumbnail(
-                    thumbnailUrl = thumbnailUrl,
-                    shape = shape,
-                    isActive = isActive,
-                    isPlaying = isPlaying,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
         },
         thumbnailRatio = thumbnailRatio,
         fillMaxWidth = fillMaxWidth,
@@ -322,13 +313,12 @@ fun ChartTrackItem(
         BadgeIcon.ChartPosition(rank)
         Spacer(modifier = Modifier.width(8.dp))
         
-        AsyncImage(
-            model = thumbnailUrl,
-            contentDescription = title,
-            contentScale = ContentScale.Crop,
+        ItemThumbnail(
+            thumbnailUrl = thumbnailUrl,
             modifier = Modifier
-                .size(Dimensions.ListThumbnailSize)
-                .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
+                .size(Dimensions.ListThumbnailSize),
+            shape = RoundedCornerShape(Dimensions.ThumbnailCornerRadius),
+            isPlaying = isPlaying
         )
         
         Column(

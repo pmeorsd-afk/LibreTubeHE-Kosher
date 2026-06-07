@@ -44,6 +44,7 @@ import com.github.libretube.helpers.ImportHelper
 import com.github.libretube.helpers.IntentHelper
 import com.github.libretube.helpers.NavBarHelper
 import com.github.libretube.helpers.NavigationHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NetworkHelper
 import com.github.libretube.helpers.PreferenceHelper
 import com.github.libretube.helpers.ThemeHelper
@@ -519,7 +520,9 @@ class MainActivity : AbstractPlayerHostActivity() {
                 TopLevelDestination.Trends.route -> navController.navigate(R.id.trendsFragment)
                 TopLevelDestination.Subscriptions.route -> navController.navigate(R.id.subscriptionsFragment)
                 TopLevelDestination.Music.route -> navController.navigate(R.id.musicFragment)
-                TopLevelDestination.Shorts.route -> navController.navigate(R.id.shortsFragment)
+                TopLevelDestination.Shorts.route -> navController.navigate(
+                    if (KosherMode.ENABLED) R.id.homeFragment else R.id.shortsFragment
+                )
                 TopLevelDestination.Library.route -> navController.navigate(R.id.libraryFragment)
             }
         }

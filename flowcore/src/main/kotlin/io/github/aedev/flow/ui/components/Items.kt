@@ -44,6 +44,7 @@ import io.github.aedev.flow.R
 import io.github.aedev.flow.data.local.PlayerPreferences
 import io.github.aedev.flow.ui.theme.Dimensions
 import io.github.aedev.flow.ui.theme.GridItemSize
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun currentGridThumbnailHeight(): Dp {
@@ -271,15 +272,26 @@ fun GridItem(
             )
     ) {
         Box {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = title,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .height(thumbnailHeight)
-                    .aspectRatio(aspectRatio)
-                    .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier
+                        .height(thumbnailHeight)
+                        .aspectRatio(aspectRatio)
+                        .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius)),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = thumbnailUrl,
+                    contentDescription = title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(thumbnailHeight)
+                        .aspectRatio(aspectRatio)
+                        .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
+                )
+            }
             if (isDownloaded) {
                 Icon(
                     imageVector = Icons.Rounded.OfflinePin,
@@ -334,14 +346,24 @@ fun ListItem(
             )
             .padding(horizontal = 12.dp)
     ) {
-        AsyncImage(
-            model = thumbnailUrl,
-            contentDescription = title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(Dimensions.ListThumbnailSize)
-                .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier
+                    .size(Dimensions.ListThumbnailSize)
+                    .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius)),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = thumbnailUrl,
+                contentDescription = title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(Dimensions.ListThumbnailSize)
+                    .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
+            )
+        }
         
         Column(
             modifier = Modifier

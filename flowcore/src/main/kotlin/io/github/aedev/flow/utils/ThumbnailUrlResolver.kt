@@ -7,16 +7,19 @@ object ThumbnailUrlResolver {
     private val googleCdnParamStartPattern = Regex("""=(?:w|s|h)""")
 
     fun buildHighQualityYoutubeThumbnail(videoId: String): String {
+        if (KosherMode.ENABLED) return ""
         val id = videoId.trim()
         return if (id.isEmpty()) "" else "https://i.ytimg.com/vi/$id/hq720.jpg"
     }
 
     fun buildFallbackYoutubeThumbnail(videoId: String): String {
+        if (KosherMode.ENABLED) return ""
         val id = videoId.trim()
         return if (id.isEmpty()) "" else "https://i.ytimg.com/vi/$id/hqdefault.jpg"
     }
 
     fun normalizeVideoThumbnail(videoId: String, rawUrl: String?): String {
+        if (KosherMode.ENABLED) return ""
         val raw = rawUrl?.trim().orEmpty()
         if (raw.isEmpty()) return buildHighQualityYoutubeThumbnail(videoId)
 
@@ -29,6 +32,7 @@ object ThumbnailUrlResolver {
     }
 
     fun resolveMusicThumbnail(videoId: String, rawUrl: String?, size: Int = 1080): String {
+        if (KosherMode.ENABLED) return ""
         val raw = rawUrl?.trim().orEmpty()
         val id = videoId.trim()
 
@@ -66,6 +70,7 @@ object ThumbnailUrlResolver {
     }
 
     fun fallbackVideoThumbnail(videoId: String, rawUrl: String?): String? {
+        if (KosherMode.ENABLED) return null
         val raw = rawUrl?.trim().orEmpty()
         val resolvedVideoId = youtubeVideoThumbnailPattern.find(raw)
             ?.groupValues

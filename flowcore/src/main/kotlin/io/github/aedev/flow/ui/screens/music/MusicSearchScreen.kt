@@ -49,6 +49,7 @@ import io.github.aedev.flow.ui.components.MusicCollectionActionItem
 import io.github.aedev.flow.ui.components.MusicCollectionQuickActionsSheet
 import io.github.aedev.flow.ui.components.MusicQuickActionsSheet
 import io.github.aedev.flow.ui.components.AddToPlaylistDialog
+import io.github.aedev.flow.ui.components.ItemThumbnail
 import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.innertube.models.*
 import io.github.aedev.flow.ui.screens.music.components.TrackListItem
@@ -616,13 +617,11 @@ fun RecommendedItemRow(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = item.thumbnail,
-            contentDescription = null,
+        ItemThumbnail(
+            thumbnailUrl = item.thumbnail,
             modifier = Modifier
-                .size(56.dp)
-                .clip(if (item is ArtistItem) CircleShape else RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop
+                .size(56.dp),
+            shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(4.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -690,13 +689,11 @@ fun YTItemRow(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = item.thumbnail,
-            contentDescription = null,
+        ItemThumbnail(
+            thumbnailUrl = item.thumbnail,
             modifier = Modifier
-                .size(56.dp)
-                .clip(if (item is ArtistItem) CircleShape else RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop
+                .size(56.dp),
+            shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(4.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -765,13 +762,11 @@ fun TopResultCard(
                 .padding(20.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = item.thumbnail,
-                    contentDescription = null,
+                ItemThumbnail(
+                    thumbnailUrl = item.thumbnail,
                     modifier = Modifier
-                        .size(100.dp)
-                        .clip(if (item is ArtistItem) CircleShape else RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                        .size(100.dp),
+                    shape = if (item is ArtistItem) CircleShape else RoundedCornerShape(12.dp)
                 )
                 Spacer(modifier = Modifier.width(20.dp))
                 Column(modifier = Modifier.weight(1f)) {

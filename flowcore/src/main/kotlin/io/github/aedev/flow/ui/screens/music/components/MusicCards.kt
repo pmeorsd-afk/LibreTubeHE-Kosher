@@ -31,6 +31,8 @@ import io.github.aedev.flow.ui.screens.music.MusicTrack
 import io.github.aedev.flow.ui.screens.music.formatViews
 import androidx.compose.ui.res.stringResource
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,12 +59,20 @@ fun AlbumCard(
             modifier = Modifier.aspectRatio(1f)
         ) {
             Box {
-                AsyncImage(
-                    model = thumbnailUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = thumbnailUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 if (isDownloaded) {
                     Icon(
                         imageVector = Icons.Rounded.OfflinePin,
@@ -116,12 +126,20 @@ fun FeaturedTrackCard(
         tonalElevation = 4.dp
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AsyncImage(
-                model = track.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = track.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
             
             Box(
                 modifier = Modifier

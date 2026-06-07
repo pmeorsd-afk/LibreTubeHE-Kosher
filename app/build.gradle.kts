@@ -37,7 +37,7 @@ android {
         versionCode = 70
         versionName = "31.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        resValue("string", "app_name", "LibreTubeHE Kosher")
+        resValue("string", "app_name", "LibreKosher")
     }
 
     ksp {
@@ -74,7 +74,7 @@ android {
         getByName("debug") {
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "LibreTubeHE Kosher Debug")
+            resValue("string", "app_name", "LibreKosher")
         }
     }
 

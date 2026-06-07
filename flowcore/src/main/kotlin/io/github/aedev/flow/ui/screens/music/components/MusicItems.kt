@@ -32,6 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.github.aedev.flow.R
 import androidx.compose.foundation.background
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -74,15 +76,23 @@ fun TrackListItem(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(track.listThumbnailUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(track.listThumbnailUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 if (isPlaying) {
                     Box(
                         modifier = Modifier
@@ -177,12 +187,20 @@ fun ArtistGridItem(
             modifier = Modifier.size(100.dp),
             tonalElevation = 4.dp
         ) {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

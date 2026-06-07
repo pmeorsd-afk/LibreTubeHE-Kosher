@@ -60,6 +60,7 @@ import io.github.aedev.flow.data.model.DeArrowResult
 import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.data.repository.DeArrowRepository
 import io.github.aedev.flow.ui.theme.extendedColors
+import io.github.aedev.flow.utils.KosherMode
 import io.github.aedev.flow.utils.ThumbnailUrlResolver
 import io.github.aedev.flow.utils.formatDuration
 import io.github.aedev.flow.utils.formatPremiereDate
@@ -1326,6 +1327,15 @@ private fun SafeAsyncImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit
 ) {
+    if (KosherMode.ENABLED) {
+        KosherPlaceholder(
+            modifier = modifier,
+            showSubtitle = false,
+            compact = true
+        )
+        return
+    }
+
     var currentModel by remember(model, fallbackModel) { mutableStateOf(model) }
     var didFallback by remember(model, fallbackModel) { mutableStateOf(false) }
     var hasError by remember(model, fallbackModel) { mutableStateOf(false) }

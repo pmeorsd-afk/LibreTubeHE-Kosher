@@ -54,6 +54,7 @@ import io.github.aedev.flow.ui.screens.player.VideoPlayerViewModel
 import io.github.aedev.flow.ui.theme.CustomThemeColors
 import io.github.aedev.flow.ui.theme.ThemeMode
 import io.github.aedev.flow.ui.theme.isEffectivelyDark
+import io.github.aedev.flow.utils.KosherMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -420,7 +421,7 @@ fun FlowApp(
         ) {
             FloatingBottomNavBar(
                 selectedIndex = selectedBottomNavIndex.intValue,
-                isShortsEnabled = isShortsNavigationEnabled,
+                isShortsEnabled = isShortsNavigationEnabled && !KosherMode.ENABLED,
                 isMusicEnabled = isMusicNavigationEnabled,
                 isSearchEnabled = isSearchNavigationEnabled,
                 isCategoriesEnabled = isCategoriesNavigationEnabled,
@@ -555,7 +556,7 @@ fun FlowApp(
 
 private fun navRouteForIndex(index: Int): String = when (index) {
     0 -> "home"
-    1 -> "shorts"
+    1 -> if (KosherMode.ENABLED) "home" else "shorts"
     2 -> "music"
     3 -> "subscriptions"
     4 -> "library"

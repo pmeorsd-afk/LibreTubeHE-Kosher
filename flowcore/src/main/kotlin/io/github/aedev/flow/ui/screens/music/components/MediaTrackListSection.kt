@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.screens.music.MusicTrack
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun MediaTrackListSection(
@@ -91,15 +93,26 @@ fun WideMediaTrackItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        AsyncImage(
-            model = track.thumbnailUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(96.dp)
-                .height(54.dp)
-                .clip(MaterialTheme.shapes.small)
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier
+                    .width(96.dp)
+                    .height(54.dp)
+                    .clip(MaterialTheme.shapes.small),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = track.thumbnailUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(96.dp)
+                    .height(54.dp)
+                    .clip(MaterialTheme.shapes.small)
+            )
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = track.title,

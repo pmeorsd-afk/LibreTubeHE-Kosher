@@ -23,7 +23,8 @@ import io.github.aedev.flow.R
 @Composable
 fun KosherPlaceholder(
     modifier: Modifier = Modifier,
-    showSubtitle: Boolean = true
+    showSubtitle: Boolean = true,
+    compact: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -48,11 +49,11 @@ fun KosherPlaceholder(
                 color = Color.White,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp
+                    fontSize = if (compact) 14.sp else 28.sp
                 ),
                 textAlign = TextAlign.Center
             )
-            if (showSubtitle) {
+            if (showSubtitle && !compact) {
                 Text(
                     text = stringResource(R.string.kosher_audio_only_notice),
                     color = Color.White.copy(alpha = 0.78f),
