@@ -32,10 +32,8 @@ import com.github.libretube.ui.models.CommonPlayerViewModel
 import com.github.libretube.ui.models.WatchHistoryModel
 import com.github.libretube.util.PlayingQueue
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WatchHistoryFragment : DynamicLayoutManagerFragment(R.layout.fragment_watch_history) {
     private var _binding: FragmentWatchHistoryBinding? = null
@@ -152,25 +150,23 @@ class WatchHistoryFragment : DynamicLayoutManagerFragment(R.layout.fragment_watc
             binding.historyEmpty.isGone = history.isNotEmpty()
             binding.watchHistoryRecView.isVisible = history.isNotEmpty()
             binding.clear.isVisible = history.isNotEmpty()
+            binding.clear.isEnabled = history.isNotEmpty()
             binding.playAll.isVisible = history.isNotEmpty()
 
             watchHistoryAdapter.submitList(history)
         }
 
-        viewModel.fetchNextPage()
+        viewModel.refresh()
 
         binding.watchHistoryRecView.addOnBottomReachedListener {
             viewModel.fetchNextPage()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val hasItems = Database.watchHistoryDao().getSize() != 0
+    }
 
-            withContext(Dispatchers.Main) {
-                binding.clear.isEnabled = hasItems
-            }
-        }
-
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) viewModel.refresh()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

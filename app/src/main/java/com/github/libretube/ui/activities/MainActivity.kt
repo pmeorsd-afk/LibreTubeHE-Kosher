@@ -1,6 +1,7 @@
 package com.github.libretube.ui.activities
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -72,6 +73,7 @@ class MainActivity : AbstractPlayerHostActivity() {
 
     lateinit var navController: NavController
     private var startFragmentId = R.id.homeFragment
+    private var defaultStatusBarColor: Int = Color.TRANSPARENT
 
     private val subscriptionsViewModel: SubscriptionsViewModel by viewModels()
 
@@ -118,6 +120,7 @@ class MainActivity : AbstractPlayerHostActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        defaultStatusBarColor = window.statusBarColor
 
         // manually apply additional padding for edge-to-edge compatibility
         // see https://developer.android.com/develop/ui/views/layout/edge-to-edge
@@ -195,6 +198,10 @@ class MainActivity : AbstractPlayerHostActivity() {
             it.setStartDestination(startFragmentId)
         }
 
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            updateMainChrome(destination.id)
+        }
+
         // Prevent duplicate entries into backstack, if selected item and current
         // visible fragment is different, then navigate to selected item.
         binding.bottomNav.setOnItemReselectedListener {
@@ -226,6 +233,12 @@ class MainActivity : AbstractPlayerHostActivity() {
         loadIntentData()
 
         showUserInfoDialogIfNeeded()
+    }
+
+    private fun updateMainChrome(destinationId: Int) {
+        val isMusicDestination = destinationId == R.id.musicFragment
+        binding.appBarLayout.visibility = if (isMusicDestination) View.GONE else View.VISIBLE
+        window.statusBarColor = if (isMusicDestination) Color.BLACK else defaultStatusBarColor
     }
 
     /**

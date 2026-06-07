@@ -52,8 +52,19 @@ class WatchHistoryModel : ViewModel() {
         }
     }
 
-    fun fetchNextPage() = viewModelScope.launch(Dispatchers.IO) {
+    fun refresh() = viewModelScope.launch(Dispatchers.IO) {
         if (isLoading) return@launch
+        currentPage = 1
+        watchHistory.postValue(emptyList())
+        loadNextPage(replace = true)
+    }
+
+    fun fetchNextPage() = viewModelScope.launch(Dispatchers.IO) {
+        loadNextPage(replace = false)
+    }
+
+    private suspend fun loadNextPage(replace: Boolean) {
+        if (isLoading) return
         isLoading = true
 
         val newHistory = withContext(Dispatchers.IO) {
@@ -67,7 +78,7 @@ class WatchHistoryModel : ViewModel() {
         currentPage++
 
         watchHistory.postValue(
-            watchHistory.value.orEmpty().toMutableList().apply {
+            (if (replace) emptyList() else watchHistory.value.orEmpty()).toMutableList().apply {
                 addAll(newHistory)
             }
         )
