@@ -78,27 +78,32 @@ object ThemeHelper {
      * change the app icon
      */
     fun changeIcon(context: Context, newLogoActivityAlias: String) {
-        // Disable Old Icon(s)
-        val activityAliases = IconsSheetAdapter.availableIcons.map { it.activityAlias } + "Default"
-        for (activityAlias in activityAliases) {
-            val activityClass = context.packageName.removeSuffix(".debug") + "." + activityAlias
+        val launcherPackage = ThemeHelper::class.java.packageName.removeSuffix(".helpers")
+        fun componentFor(activityAlias: String) =
+            ComponentName(context.packageName, "$launcherPackage.$activityAlias")
 
-            // remove old icons
+        // Enable the new icon first so the launcher always has a valid component.
+        runCatching {
             context.packageManager.setComponentEnabledSetting(
-                ComponentName(context.packageName, activityClass),
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                componentFor(newLogoActivityAlias),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP
             )
         }
 
-        // set the class name for the activity alias
-        val newLogoActivityClass = context.packageName.removeSuffix(".debug") + "." + newLogoActivityAlias
-        // Enable New Icon
-        context.packageManager.setComponentEnabledSetting(
-            ComponentName(context.packageName, newLogoActivityClass),
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP
-        )
+        // Disable old icon aliases.
+        val activityAliases = IconsSheetAdapter.availableIcons.map { it.activityAlias } + "Default"
+        for (activityAlias in activityAliases) {
+            if (activityAlias == newLogoActivityAlias) continue
+
+            runCatching {
+                context.packageManager.setComponentEnabledSetting(
+                    componentFor(activityAlias),
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP
+                )
+            }
+        }
     }
 
     fun migrateLauncherIconIfNeeded(context: Context) {
