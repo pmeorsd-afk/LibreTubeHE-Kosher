@@ -39,7 +39,7 @@ class IconsSheetAdapter : RecyclerView.Adapter<IconsSheetViewHolder>() {
             val activityAlias: String
         ) {
             object Default :
-                AppIcon(R.string.defaultIcon, R.mipmap.ic_launcher, "Default")
+                AppIcon(R.string.defaultIcon, R.mipmap.ic_launcher, "LibreKosherLauncher")
 
             object DefaultLight :
                 AppIcon(R.string.defaultIconLight, R.mipmap.ic_launcher_light, "DefaultLight")

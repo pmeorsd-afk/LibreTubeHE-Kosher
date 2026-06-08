@@ -18,6 +18,8 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 
 object ThemeHelper {
+    private const val LAUNCHER_ICON_MIGRATED = "launcher_icon_component_v2_migrated"
+
     /**
      * Set the theme, including accent color and night mode
      */
@@ -77,8 +79,9 @@ object ThemeHelper {
      */
     fun changeIcon(context: Context, newLogoActivityAlias: String) {
         // Disable Old Icon(s)
-        for (appIcon in IconsSheetAdapter.availableIcons) {
-            val activityClass = context.packageName.removeSuffix(".debug") + "." + appIcon.activityAlias
+        val activityAliases = IconsSheetAdapter.availableIcons.map { it.activityAlias } + "Default"
+        for (activityAlias in activityAliases) {
+            val activityClass = context.packageName.removeSuffix(".debug") + "." + activityAlias
 
             // remove old icons
             context.packageManager.setComponentEnabledSetting(
@@ -96,6 +99,15 @@ object ThemeHelper {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP
         )
+    }
+
+    fun migrateLauncherIconIfNeeded(context: Context) {
+        if (PreferenceHelper.getBoolean(LAUNCHER_ICON_MIGRATED, false)) return
+
+        val defaultAlias = IconsSheetAdapter.Companion.AppIcon.Default.activityAlias
+        PreferenceHelper.putString(PreferenceKeys.APP_ICON, defaultAlias)
+        changeIcon(context, defaultAlias)
+        PreferenceHelper.putBoolean(LAUNCHER_ICON_MIGRATED, true)
     }
 
     /**

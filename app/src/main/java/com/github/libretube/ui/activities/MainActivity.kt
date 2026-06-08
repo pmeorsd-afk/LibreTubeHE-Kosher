@@ -111,6 +111,7 @@ class MainActivity : AbstractPlayerHostActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        ThemeHelper.migrateLauncherIconIfNeeded(this)
 
         // show noInternet Activity if no internet available on app startup
         if (!NetworkHelper.isNetworkAvailable(this)) {
