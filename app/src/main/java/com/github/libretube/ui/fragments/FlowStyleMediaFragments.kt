@@ -54,6 +54,7 @@ import coil3.compose.AsyncImage
 import com.github.libretube.R
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.parcelable.PlayerData
+import com.github.libretube.ui.activities.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.aedev.flow.innertube.models.SongItem
 import io.github.aedev.flow.player.EnhancedMusicPlayerManager
@@ -156,6 +157,16 @@ private fun NavController.goMusicHome() {
 
 @AndroidEntryPoint
 class MusicFragment : FlowChromeFragment() {
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.setMusicChromeActive(true)
+    }
+
+    override fun onPause() {
+        (activity as? MainActivity)?.setMusicChromeActive(false)
+        super.onPause()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

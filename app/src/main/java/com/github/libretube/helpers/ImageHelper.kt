@@ -102,12 +102,12 @@ object ImageHelper {
      * load an image from a url into an imageView
      */
     fun loadImage(url: String?, target: ImageView, whiteBackground: Boolean = false) {
-        if (url.isNullOrEmpty()) return
-
-        if (KosherMode.ENABLED && !whiteBackground) {
-            target.setImageDrawable(KosherThumbnailDrawable(target.context))
+        if (KosherMode.ENABLED) {
+            target.setImageDrawable(KosherThumbnailDrawable(target.context, showLabel = !whiteBackground))
             return
         }
+
+        if (url.isNullOrEmpty()) return
 
         // clear image to avoid loading issues at fast scrolling
         target.setImageBitmap(null)
@@ -166,7 +166,10 @@ object ImageHelper {
     }
 }
 
-private class KosherThumbnailDrawable(context: Context) : Drawable() {
+private class KosherThumbnailDrawable(
+    context: Context,
+    private val showLabel: Boolean = true
+) : Drawable() {
     private val label = context.getString(com.github.libretube.R.string.kosher_version)
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -193,10 +196,12 @@ private class KosherThumbnailDrawable(context: Context) : Drawable() {
         )
         canvas.drawRect(bounds, backgroundPaint)
 
-        textPaint.textSize = (bounds.height() * 0.18f).coerceIn(22f, 44f)
-        val metrics = textPaint.fontMetrics
-        val y = bounds.centerY() - (metrics.ascent + metrics.descent) / 2f
-        canvas.drawText(label, bounds.centerX().toFloat(), y, textPaint)
+        if (showLabel) {
+            textPaint.textSize = (bounds.height() * 0.18f).coerceIn(22f, 44f)
+            val metrics = textPaint.fontMetrics
+            val y = bounds.centerY() - (metrics.ascent + metrics.descent) / 2f
+            canvas.drawText(label, bounds.centerX().toFloat(), y, textPaint)
+        }
     }
 
     override fun setAlpha(alpha: Int) {

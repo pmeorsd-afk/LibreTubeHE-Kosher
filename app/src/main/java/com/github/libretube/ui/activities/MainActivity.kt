@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.motion.widget.Key
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
@@ -21,6 +22,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.allViews
 import androidx.core.view.children
 import androidx.core.view.isNotEmpty
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -237,8 +239,22 @@ class MainActivity : AbstractPlayerHostActivity() {
 
     private fun updateMainChrome(destinationId: Int) {
         val isMusicDestination = destinationId == R.id.musicFragment
-        binding.appBarLayout.visibility = if (isMusicDestination) View.GONE else View.VISIBLE
-        window.statusBarColor = if (isMusicDestination) Color.BLACK else defaultStatusBarColor
+        setMusicChromeActive(isMusicDestination)
+    }
+
+    fun setMusicChromeActive(active: Boolean) {
+        binding.appBarLayout.visibility = if (active) View.GONE else View.VISIBLE
+        binding.toolbar.visibility = if (active) View.GONE else View.VISIBLE
+        window.statusBarColor = if (active) Color.BLACK else defaultStatusBarColor
+        binding.fragment.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            if (active) {
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                topToBottom = ConstraintLayout.LayoutParams.UNSET
+            } else {
+                topToTop = ConstraintLayout.LayoutParams.UNSET
+                topToBottom = binding.appBarLayout.id
+            }
+        }
     }
 
     /**
