@@ -400,6 +400,7 @@
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
+                android:gravity="center_vertical"
                 android:paddingHorizontal="28dp">
 
                 <ImageView
@@ -407,7 +408,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_youtube_music"
+                    android:src="@drawable/ic_music_note"
+                    app:tint="?android:textColorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -419,6 +421,7 @@
                     android:gravity="end"
                     android:text="@string/libre_music"
                     android:textColor="?android:textColorPrimary"
+                    android:textDirection="rtl"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/category_music_icon"
