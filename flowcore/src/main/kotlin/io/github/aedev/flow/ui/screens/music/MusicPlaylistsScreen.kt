@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.screens.playlists.PlaylistInfo
+import io.github.aedev.flow.utils.KosherMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -343,7 +345,13 @@ fun MusicPlaylistCard(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
-                if (playlist.thumbnailUrl.isNotEmpty()) {
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else if (playlist.thumbnailUrl.isNotEmpty()) {
                     AsyncImage(
                         model = playlist.thumbnailUrl,
                         contentDescription = null,

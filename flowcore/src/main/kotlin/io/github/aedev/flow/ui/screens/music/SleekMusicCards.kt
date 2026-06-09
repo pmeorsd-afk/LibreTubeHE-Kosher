@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import io.github.aedev.flow.R
 import coil.compose.AsyncImage
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 /**
  * Sleek music card with gradient overlay - inspired by modern music apps
@@ -46,12 +48,19 @@ fun SleekMusicCard(
             .clickable(onClick = onClick)
     ) {
         // Album art background
-        AsyncImage(
-            model = track.thumbnailUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                showSubtitle = false
+            )
+        } else {
+            AsyncImage(
+                model = track.thumbnailUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         
         // Gradient overlay
         Box(
@@ -187,12 +196,20 @@ fun CompactSleekCard(
                     .size(56.dp)
                     .clip(RoundedCornerShape(8.dp))
             ) {
-                AsyncImage(
-                    model = track.thumbnailUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = track.thumbnailUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
                 
                 // Small gradient overlay
                 Box(
@@ -269,12 +286,19 @@ fun HeroMusicCard(
             .clickable(onClick = onClick)
     ) {
         // Background image
-        AsyncImage(
-            model = track.thumbnailUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                showSubtitle = false
+            )
+        } else {
+            AsyncImage(
+                model = track.thumbnailUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         
         // Dark gradient overlay
         Box(
@@ -382,12 +406,20 @@ fun GridMusicCard(
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(12.dp))
         ) {
-            AsyncImage(
-                model = track.thumbnailUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = track.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
             
             // Subtle gradient
             Box(

@@ -31,7 +31,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.screens.music.DailyDiscoverItem
+import io.github.aedev.flow.utils.KosherMode
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -56,12 +58,19 @@ fun DailyDiscoverCard(
         )
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AsyncImage(
-                model = item.recommendation.highResThumbnailUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false
+                )
+            } else {
+                AsyncImage(
+                    model = item.recommendation.highResThumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             Box(
                 modifier = Modifier

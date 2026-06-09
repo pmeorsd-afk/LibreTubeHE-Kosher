@@ -1,4 +1,4 @@
-package io.github.aedev.flow.ui.screens.music
+﻿package io.github.aedev.flow.ui.screens.music
 
 import android.content.Context
 import android.content.Intent
@@ -46,12 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.components.MusicQuickActionsSheet
 import io.github.aedev.flow.ui.components.MusicCollectionActionItem
 import io.github.aedev.flow.ui.components.MusicCollectionQuickActionsSheet
 import io.github.aedev.flow.ui.components.AddToPlaylistDialog
 import io.github.aedev.flow.data.model.Video
 import io.github.aedev.flow.ui.screens.music.components.TrackListItem
+import io.github.aedev.flow.utils.KosherMode
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -70,13 +72,13 @@ fun ArtistPage(
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val density = LocalDensity.current
-    
+
     val transparentAppBar by remember {
         derivedStateOf {
             scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset < 100
         }
     }
-    
+
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedTrack by remember { mutableStateOf<MusicTrack?>(null) }
     var selectedCollection by remember { mutableStateOf<MusicCollectionActionItem?>(null) }
@@ -86,17 +88,17 @@ fun ArtistPage(
         MusicQuickActionsSheet(
             track = selectedTrack!!,
             onDismiss = { showBottomSheet = false },
-            onViewArtist = { 
+            onViewArtist = {
                 if (selectedTrack!!.channelId.isNotEmpty()) {
                     onArtistClick(selectedTrack!!.channelId)
                 }
             },
-            onViewAlbum = { 
+            onViewAlbum = {
                 selectedTrack!!.albumId?.let { albumId ->
                      onAlbumClick(MusicPlaylist(id = albumId, title = selectedTrack!!.album ?: "Album", thumbnailUrl = ""))
                 }
             },
-            onShare = { 
+            onShare = {
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_SUBJECT, selectedTrack!!.title)
@@ -123,14 +125,14 @@ fun ArtistPage(
             }
         )
     }
-    
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     if (!transparentAppBar) {
                         Text(
                             text = artistDetails.name,
@@ -180,41 +182,50 @@ fun ArtistPage(
                 item {
                     val imageUrl = artistDetails.thumbnailUrl.ifEmpty { artistDetails.bannerUrl }
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        // Background Image
-                        AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(imageUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(400.dp)
-                                .blur(50.dp)
-                                .mediaQuery(
-                                    comparator = androidx.compose.ui.layout.ContentScale.Crop
-                                ),
-                            contentScale = ContentScale.Crop,
-                            alpha = 0.6f
-                        )
-                        
-                        // Main Hero Image
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                        ) {
-                             AsyncImage(
+                        if (!KosherMode.ENABLED) {
+                            // Background Image
+                            AsyncImage(
                                 model = ImageRequest.Builder(context)
                                     .data(imageUrl)
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .fillMaxSize(),
-                                contentScale = ContentScale.Crop
+                                    .fillMaxWidth()
+                                    .height(400.dp)
+                                    .blur(50.dp)
+                                    .mediaQuery(
+                                        comparator = androidx.compose.ui.layout.ContentScale.Crop
+                                    ),
+                                contentScale = ContentScale.Crop,
+                                alpha = 0.6f
                             )
-                            
+                        }
+
+                        // Main Hero Image
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                        ) {
+                            if (KosherMode.ENABLED) {
+                                KosherPlaceholder(
+                                    modifier = Modifier.fillMaxSize(),
+                                    showSubtitle = false
+                                )
+                            } else {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(imageUrl)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
                             // Bottom Gradient for Text
                             Box(
                                 modifier = Modifier
@@ -251,9 +262,9 @@ fun ArtistPage(
                             ),
                             color = MaterialTheme.colorScheme.onBackground
                         )
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         // Controls Row
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -264,9 +275,9 @@ fun ArtistPage(
                             Button(
                                 onClick = onFollowClick,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (artistDetails.isSubscribed) 
+                                    containerColor = if (artistDetails.isSubscribed)
                                         MaterialTheme.colorScheme.surfaceVariant
-                                    else 
+                                    else
                                         MaterialTheme.colorScheme.primary,
                                     contentColor = if (artistDetails.isSubscribed)
                                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -282,12 +293,12 @@ fun ArtistPage(
                                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
-                            
+
                             Spacer(modifier = Modifier.weight(1f))
-                            
+
                             // Shuffle Button
                             FilledIconButton(
-                                onClick = { 
+                                onClick = {
                                     if (artistDetails.topTracks.isNotEmpty()) {
                                         onTrackClick(artistDetails.topTracks.random(), artistDetails.topTracks.shuffled())
                                     }
@@ -302,7 +313,7 @@ fun ArtistPage(
 
                             // Play Button
                             FilledIconButton(
-                                onClick = { 
+                                onClick = {
                                     if (artistDetails.topTracks.isNotEmpty()) {
                                         onTrackClick(artistDetails.topTracks.first(), artistDetails.topTracks)
                                     }
@@ -365,7 +376,7 @@ fun ArtistPage(
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                             )
                             if (artistDetails.topTracks.size > 5 || artistDetails.topTracksBrowseId != null) {
-                                TextButton(onClick = { 
+                                TextButton(onClick = {
                                     artistDetails.topTracksBrowseId?.let { onSeeAllClick(it, artistDetails.topTracksParams) }
                                 }) {
                                     Text(stringResource(R.string.action_view_all))
@@ -373,7 +384,7 @@ fun ArtistPage(
                             }
                         }
                     }
-                    
+
                     itemsIndexed(artistDetails.topTracks.take(5)) { index, track ->
                         TrackListItem(
                             track = track,
@@ -392,17 +403,17 @@ fun ArtistPage(
                                 selectedTrack = track
                                 showBottomSheet = true
                             },
-                            onMenuClick = { 
+                            onMenuClick = {
                                 selectedTrack = track
                                 showBottomSheet = true
                             }
                         )
                     }
                 }
-                
+
                 // Singles & EPs
                 if (artistDetails.singles.isNotEmpty()) {
-                    item { 
+                    item {
                         SectionHeader(
                             title = stringResource(R.string.section_singles),
                             onSeeAllClick = { artistDetails.singlesBrowseId?.let { onSeeAllClick(it, artistDetails.singlesParams) } }
@@ -426,7 +437,7 @@ fun ArtistPage(
 
                 // Albums
                 if (artistDetails.albums.isNotEmpty()) {
-                    item { 
+                    item {
                         SectionHeader(
                             title = stringResource(R.string.filter_albums),
                             onSeeAllClick = { artistDetails.albumsBrowseId?.let { onSeeAllClick(it, artistDetails.albumsParams) } }
@@ -447,7 +458,7 @@ fun ArtistPage(
                         }
                     }
                 }
-                
+
                 // Videos
                 if (artistDetails.videos.isNotEmpty()) {
                     item { SectionHeader(title = stringResource(R.string.tab_videos)) }
@@ -482,7 +493,7 @@ fun ArtistPage(
                         }
                     }
                 }
-                
+
                 // Related Artists
                 if (artistDetails.relatedArtists.isNotEmpty()) {
                     item { SectionHeader(title = stringResource(R.string.section_fans_also_like)) }
@@ -552,14 +563,24 @@ fun AlbumCard(
             )
     ) {
         Box {
-            AsyncImage(
-                model = album.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(160.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = album.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
             if (onActionClick != null) {
                 IconButton(
                     onClick = onActionClick,
@@ -608,15 +629,26 @@ fun VideoCard(video: MusicTrack, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         Box {
-            AsyncImage(
-                model = video.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(220.dp)
-                    .aspectRatio(16f/9f)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier
+                        .width(220.dp)
+                        .aspectRatio(16f/9f)
+                        .clip(RoundedCornerShape(12.dp)),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = video.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(220.dp)
+                        .aspectRatio(16f/9f)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -625,7 +657,7 @@ fun VideoCard(video: MusicTrack, onClick: () -> Unit) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        
+
         val viewsText = if (video.views > 0) formatViews(video.views) else null
         val subtitle = if (viewsText != null) {
             stringResource(R.string.artist_views_template, video.artist, viewsText)
@@ -648,14 +680,24 @@ fun RelatedArtistCard(artist: ArtistDetails, onClick: () -> Unit) {
             .width(100.dp)
             .clickable(onClick = onClick)
     ) {
-        AsyncImage(
-            model = artist.thumbnailUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = artist.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = artist.name,

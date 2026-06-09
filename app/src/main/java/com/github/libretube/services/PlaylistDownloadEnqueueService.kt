@@ -120,12 +120,17 @@ class PlaylistDownloadEnqueueService : LifecycleService() {
             return
         }
 
-        val thumbnailPath = getDownloadPath(DownloadHelper.PLAYLIST_THUMBNAIL_DIR, playlistId)
-        CoroutineScope(Dispatchers.IO).launch {
-            playlist.thumbnailUrl?.let { url ->
-                ImageHelper.downloadImage(
-                    this@PlaylistDownloadEnqueueService, url, thumbnailPath
-                )
+        val thumbnailPath = if (KosherMode.ENABLED) {
+            null
+        } else {
+            getDownloadPath(DownloadHelper.PLAYLIST_THUMBNAIL_DIR, playlistId).also { path ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    playlist.thumbnailUrl?.let { url ->
+                        ImageHelper.downloadImage(
+                            this@PlaylistDownloadEnqueueService, url, path
+                        )
+                    }
+                }
             }
         }
 

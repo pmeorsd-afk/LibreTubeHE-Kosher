@@ -51,10 +51,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.components.ReorderHandle
 import io.github.aedev.flow.ui.components.MusicQuickActionsSheet
 import io.github.aedev.flow.ui.components.ThumbnailWatchProgress
 import io.github.aedev.flow.ui.components.rememberReorderableLazyListState
+import io.github.aedev.flow.utils.KosherMode
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -191,16 +193,18 @@ fun PlaylistPage(
     Box(modifier = modifier.fillMaxSize()) {
 
         // ── Ambient blurred background (same as music player) ──────────────
-        AsyncImage(
-            model = playlistDetails.thumbnailUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(480.dp)
-                .blur(120.dp),
-            alpha = 0.65f,
-            contentScale = ContentScale.Crop
-        )
+        if (!KosherMode.ENABLED) {
+            AsyncImage(
+                model = playlistDetails.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(480.dp)
+                    .blur(120.dp),
+                alpha = 0.65f,
+                contentScale = ContentScale.Crop
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -517,12 +521,19 @@ private fun PlaylistCenteredHeader(
             tonalElevation = 0.dp,
             shadowElevation = 24.dp
         ) {
-            AsyncImage(
-                model = playlistDetails.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false
+                )
+            } else {
+                AsyncImage(
+                    model = playlistDetails.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(28.dp))
@@ -815,12 +826,20 @@ private fun PlaylistTrackRow(
                 shape = RoundedCornerShape(6.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {
-                AsyncImage(
-                    model = track.thumbnailUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = track.thumbnailUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             ThumbnailWatchProgress(
@@ -894,14 +913,24 @@ private fun SearchResultTrackRow(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = track.thumbnailUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = track.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -1042,7 +1071,13 @@ private fun MusicMergeIntoPlaylistDialog(
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.surfaceVariant
                             ) {
-                                if (playlist.thumbnailUrl.isNotEmpty()) {
+                                if (KosherMode.ENABLED) {
+                                    KosherPlaceholder(
+                                        modifier = Modifier.fillMaxSize(),
+                                        showSubtitle = false,
+                                        compact = true
+                                    )
+                                } else if (playlist.thumbnailUrl.isNotEmpty()) {
                                     AsyncImage(
                                         model = playlist.thumbnailUrl,
                                         contentDescription = null,

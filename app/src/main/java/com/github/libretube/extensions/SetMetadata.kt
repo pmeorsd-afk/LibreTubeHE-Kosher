@@ -12,6 +12,7 @@ import com.github.libretube.api.obj.Streams
 import com.github.libretube.constants.IntentData
 import com.github.libretube.db.obj.DownloadChapter
 import com.github.libretube.db.obj.DownloadWithItems
+import com.github.libretube.helpers.KosherMode
 
 @OptIn(UnstableApi::class)
 fun MediaItem.Builder.setMetadata(streams: Streams, videoId: String) = apply {
@@ -25,18 +26,20 @@ fun MediaItem.Builder.setMetadata(streams: Streams, videoId: String) = apply {
         IntentData.streams to JsonHelper.json.encodeToString(clearedStreams),
         IntentData.chapters to JsonHelper.json.encodeToString(streams.chapters)
     )
-    setMediaMetadata(
-        MediaMetadata.Builder()
-            .setTitle(streams.title)
-            .setArtist(streams.uploader)
-            .setDurationMs(streams.duration.times(1000))
-            .setArtworkUri(streams.thumbnailUrl.toUri())
-            .setComposer(streams.uploaderUrl.orEmpty().toID())
-            .setExtras(extras)
-            // send a unique timestamp to notify that the metadata changed, even if playing the same video twice
-            .setTrackNumber(System.currentTimeMillis().mod(Int.MAX_VALUE))
-            .build()
-    )
+    val metadataBuilder = MediaMetadata.Builder()
+        .setTitle(streams.title)
+        .setArtist(streams.uploader)
+        .setDurationMs(streams.duration.times(1000))
+        .setComposer(streams.uploaderUrl.orEmpty().toID())
+        .setExtras(extras)
+        // send a unique timestamp to notify that the metadata changed, even if playing the same video twice
+        .setTrackNumber(System.currentTimeMillis().mod(Int.MAX_VALUE))
+
+    if (!KosherMode.ENABLED) {
+        metadataBuilder.setArtworkUri(streams.thumbnailUrl.toUri())
+    }
+
+    setMediaMetadata(metadataBuilder.build())
 }
 
 @OptIn(UnstableApi::class)
@@ -52,15 +55,17 @@ fun MediaItem.Builder.setMetadata(downloadWithItems: DownloadWithItems) = apply 
         IntentData.streams to JsonHelper.json.encodeToString(streams),
         IntentData.chapters to JsonHelper.json.encodeToString(chapters)
     )
-    setMediaMetadata(
-        MediaMetadata.Builder()
-            .setTitle(download.title)
-            .setArtist(download.uploader)
-            .setDurationMs(download.duration?.times(1000))
-            .setArtworkUri(download.thumbnailPath?.toAndroidUri())
-            .setExtras(extras)
-            // send a unique timestamp to notify that the metadata changed, even if playing the same video twice
-            .setTrackNumber(System.currentTimeMillis().mod(Int.MAX_VALUE))
-            .build()
-    )
+    val metadataBuilder = MediaMetadata.Builder()
+        .setTitle(download.title)
+        .setArtist(download.uploader)
+        .setDurationMs(download.duration?.times(1000))
+        .setExtras(extras)
+        // send a unique timestamp to notify that the metadata changed, even if playing the same video twice
+        .setTrackNumber(System.currentTimeMillis().mod(Int.MAX_VALUE))
+
+    if (!KosherMode.ENABLED) {
+        metadataBuilder.setArtworkUri(download.thumbnailPath?.toAndroidUri())
+    }
+
+    setMediaMetadata(metadataBuilder.build())
 }

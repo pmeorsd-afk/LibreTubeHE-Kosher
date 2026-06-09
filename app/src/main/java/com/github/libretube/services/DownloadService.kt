@@ -172,7 +172,11 @@ class DownloadService : LifecycleService() {
     }
 
     private suspend fun storeVideoMetadata(videoId: String, streams: Streams) {
-        val thumbnailTargetPath = getDownloadPath(DownloadHelper.THUMBNAIL_DIR, videoId)
+        val thumbnailTargetPath = if (KosherMode.ENABLED) {
+            null
+        } else {
+            getDownloadPath(DownloadHelper.THUMBNAIL_DIR, videoId)
+        }
 
         val download = Download(
             videoId,
@@ -215,7 +219,7 @@ class DownloadService : LifecycleService() {
     private suspend fun downloadExtraVideoMetadata(
         videoId: String,
         thumbnailUrl: String,
-        thumbnailTargetPath: Path
+        thumbnailTargetPath: Path?
     ) {
         coroutineScope {
             launch {
@@ -233,7 +237,7 @@ class DownloadService : LifecycleService() {
                 )
             }
 
-            launch {
+            if (thumbnailTargetPath != null && !KosherMode.ENABLED) launch {
                 try {
                     ImageHelper.downloadImage(
                         this@DownloadService,

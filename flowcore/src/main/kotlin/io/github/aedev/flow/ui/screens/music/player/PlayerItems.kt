@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.screens.music.MusicTrack
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun UpNextTrackItem(
@@ -41,14 +43,24 @@ fun UpNextTrackItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Thumbnail
-        AsyncImage(
-            model = track.thumbnailUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop
-        )
+        if (KosherMode.ENABLED) {
+            KosherPlaceholder(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                showSubtitle = false,
+                compact = true
+            )
+        } else {
+            AsyncImage(
+                model = track.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
         
         Spacer(modifier = Modifier.width(12.dp))
         
@@ -125,10 +137,18 @@ fun QueueTrackItem(
                 modifier = Modifier.size(48.dp),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                AsyncImage(
-                    model = track.thumbnailUrl,
-                    contentDescription = null
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = track.thumbnailUrl,
+                        contentDescription = null
+                    )
+                }
             }
             
             // Track info
@@ -194,12 +214,20 @@ fun RelatedTrackItem(
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier.size(56.dp)
         ) {
-            AsyncImage(
-                model = track.thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize(),
+                    showSubtitle = false,
+                    compact = true
+                )
+            } else {
+                AsyncImage(
+                    model = track.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         
         Spacer(modifier = Modifier.width(16.dp))

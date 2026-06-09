@@ -65,9 +65,11 @@ import io.github.aedev.flow.data.local.PlayerPreferences
 import io.github.aedev.flow.player.EnhancedMusicPlayerManager
 import io.github.aedev.flow.player.SleepTimerManager
 import io.github.aedev.flow.ui.components.SleepTimerSheet
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.screens.music.player.*
 import io.github.aedev.flow.ui.components.MusicQuickActionsSheet
 import androidx.compose.foundation.clickable
+import io.github.aedev.flow.utils.KosherMode
 
 private val PlayerHorizontalPadding = 28.dp
 
@@ -612,12 +614,20 @@ fun EnhancedMusicPlayerScreen(
                         modifier = Modifier.size(42.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        AsyncImage(
-                            model = uiState.currentTrack?.highResThumbnailUrl ?: track.highResThumbnailUrl,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+                        if (KosherMode.ENABLED) {
+                            KosherPlaceholder(
+                                modifier = Modifier.fillMaxSize(),
+                                showSubtitle = false,
+                                compact = true
+                            )
+                        } else {
+                            AsyncImage(
+                                model = uiState.currentTrack?.highResThumbnailUrl ?: track.highResThumbnailUrl,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {

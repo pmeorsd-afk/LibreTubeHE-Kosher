@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import io.github.aedev.flow.ui.components.KosherPlaceholder
+import io.github.aedev.flow.utils.KosherMode
 
 /**
  * Library Screen - Shows Playlists, Favorites, and Downloads
@@ -391,7 +393,13 @@ private fun PlaylistCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (playlist.thumbnailUrl.isNotBlank()) {
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else if (playlist.thumbnailUrl.isNotBlank()) {
                     AsyncImage(
                         model = playlist.thumbnailUrl,
                         contentDescription = null,
@@ -464,11 +472,19 @@ private fun DownloadedTrackCard(
                     .size(56.dp)
                     .clip(RoundedCornerShape(8.dp))
             ) {
-                AsyncImage(
-                    model = download.track.thumbnailUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (KosherMode.ENABLED) {
+                    KosherPlaceholder(
+                        modifier = Modifier.fillMaxSize(),
+                        showSubtitle = false,
+                        compact = true
+                    )
+                } else {
+                    AsyncImage(
+                        model = download.track.thumbnailUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
                 
                 // Offline badge
                 Surface(

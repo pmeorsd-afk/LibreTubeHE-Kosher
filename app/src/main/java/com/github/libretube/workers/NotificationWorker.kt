@@ -24,6 +24,7 @@ import com.github.libretube.constants.PreferenceKeys
 import com.github.libretube.extensions.TAG
 import com.github.libretube.extensions.toID
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PreferenceHelper
 import com.github.libretube.ui.activities.MainActivity
 import com.github.libretube.ui.views.TimePickerPreference
@@ -208,6 +209,8 @@ class NotificationWorker(appContext: Context, parameters: WorkerParameters) :
     }
 
     private suspend fun downloadImage(url: String?): Bitmap? {
+        if (KosherMode.ENABLED) return null
+
         return if (PreferenceHelper.getBoolean(PreferenceKeys.SHOW_STREAM_THUMBNAILS, false)) {
             ImageHelper.getImage(applicationContext, url)
         } else {

@@ -40,9 +40,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.github.aedev.flow.R
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.components.SectionTitle
 import io.github.aedev.flow.ui.screens.music.CommunityMusicPlaylist
 import io.github.aedev.flow.ui.screens.music.MusicTrack
+import io.github.aedev.flow.utils.KosherMode
 
 @Composable
 fun CommunityPlaylistsSection(
@@ -155,14 +157,24 @@ fun CommunityPlaylistCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        AsyncImage(
-                            model = track.thumbnailUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(MaterialTheme.shapes.medium)
-                        )
+                        if (KosherMode.ENABLED) {
+                            KosherPlaceholder(
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(MaterialTheme.shapes.medium),
+                                showSubtitle = false,
+                                compact = true
+                            )
+                        } else {
+                            AsyncImage(
+                                model = track.thumbnailUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            )
+                        }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = track.title,
@@ -219,14 +231,24 @@ fun MosaicThumbnail(
                 Row(modifier = Modifier.weight(1f)) {
                     repeat(2) { col ->
                         val track = tracks.getOrNull(row * 2 + col)
-                        AsyncImage(
-                            model = track?.thumbnailUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize()
-                        )
+                        if (KosherMode.ENABLED) {
+                            KosherPlaceholder(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize(),
+                                showSubtitle = false,
+                                compact = true
+                            )
+                        } else {
+                            AsyncImage(
+                                model = track?.thumbnailUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                            )
+                        }
                     }
                 }
             }

@@ -14,6 +14,7 @@ import androidx.media3.session.SessionToken
 import io.github.aedev.flow.data.local.QueuePersistence
 import io.github.aedev.flow.service.Media3MusicService
 import io.github.aedev.flow.ui.screens.music.MusicTrack
+import io.github.aedev.flow.utils.KosherMode
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.CoroutineScope
@@ -386,16 +387,18 @@ object EnhancedMusicPlayerManager {
         uri: Uri = Uri.parse("music://${track.videoId}"),
         useCacheKey: Boolean = true
     ): MediaItem {
+        val metadataBuilder = MediaMetadata.Builder()
+            .setTitle(track.title)
+            .setArtist(track.artist)
+
+        if (!KosherMode.ENABLED) {
+            metadataBuilder.setArtworkUri(Uri.parse(track.highResThumbnailUrl))
+        }
+
         val builder = MediaItem.Builder()
             .setUri(uri)
             .setMediaId(track.videoId)
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle(track.title)
-                    .setArtist(track.artist)
-                    .setArtworkUri(Uri.parse(track.highResThumbnailUrl))
-                    .build()
-            )
+            .setMediaMetadata(metadataBuilder.build())
 
         if (useCacheKey) {
             builder.setCustomCacheKey(track.videoId)

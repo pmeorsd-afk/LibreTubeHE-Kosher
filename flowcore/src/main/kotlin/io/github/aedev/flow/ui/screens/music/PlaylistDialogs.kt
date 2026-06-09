@@ -28,7 +28,9 @@ import androidx.compose.ui.res.stringResource
 import io.github.aedev.flow.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import io.github.aedev.flow.ui.components.KosherPlaceholder
 import io.github.aedev.flow.ui.components.rememberFlowSheetState
+import io.github.aedev.flow.utils.KosherMode
 
 /**
  * Playlist Creation Dialog
@@ -227,7 +229,11 @@ private fun MusicPlaylistSheetRow(
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            if (thumbnailUrl.isNotBlank()) {
+            if (KosherMode.ENABLED) {
+                KosherPlaceholder(
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else if (thumbnailUrl.isNotBlank()) {
                 AsyncImage(
                     model = thumbnailUrl,
                     contentDescription = playlist.name,
@@ -304,12 +310,18 @@ fun TrackOptionsBottomSheet(
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(56.dp)
-                ) {
-                    coil.compose.AsyncImage(
-                        model = track.thumbnailUrl,
-                        contentDescription = null,
-                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                    )
+            ) {
+                    if (KosherMode.ENABLED) {
+                        KosherPlaceholder(
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        coil.compose.AsyncImage(
+                            model = track.thumbnailUrl,
+                            contentDescription = null,
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        )
+                    }
                 }
                 
                 Spacer(Modifier.width(16.dp))

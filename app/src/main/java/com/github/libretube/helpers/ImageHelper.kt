@@ -103,7 +103,7 @@ object ImageHelper {
      */
     fun loadImage(url: String?, target: ImageView, whiteBackground: Boolean = false) {
         if (KosherMode.ENABLED) {
-            target.setImageDrawable(KosherThumbnailDrawable(target.context, showLabel = !whiteBackground))
+            setKosherThumbnail(target, showLabel = !whiteBackground)
             return
         }
 
@@ -130,12 +130,19 @@ object ImageHelper {
     }
 
     suspend fun downloadImage(context: Context, url: String, path: Path) {
+        if (KosherMode.ENABLED) return
+
         val bitmap = getImage(context, url) ?: return
         withContext(Dispatchers.IO) {
             context.contentResolver.openOutputStream(path.toAndroidUri())?.use {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 25, it)
             }
         }
+    }
+
+    fun setKosherThumbnail(target: ImageView, showLabel: Boolean = true) {
+        target.setImageDrawable(KosherThumbnailDrawable(target.context, showLabel = showLabel))
+        target.clearColorFilter()
     }
 
     suspend fun getImage(context: Context, url: String?): Bitmap? {

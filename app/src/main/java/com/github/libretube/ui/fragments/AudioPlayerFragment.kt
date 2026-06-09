@@ -40,6 +40,7 @@ import com.github.libretube.helpers.AudioHelper
 import com.github.libretube.helpers.BackgroundHelper
 import com.github.libretube.helpers.ClipboardHelper
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.ThemeHelper
@@ -358,7 +359,14 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player), AudioPlaye
             NavigationHelper.navigateChannel(requireContext(), uploaderId)
         }
 
-        metadata.artworkUri?.let { updateThumbnailAsync(it) }
+        if (KosherMode.ENABLED) {
+            binding.progress.isGone = true
+            binding.thumbnail.isVisible = true
+            ImageHelper.setKosherThumbnail(binding.thumbnail)
+            ImageHelper.setKosherThumbnail(binding.miniPlayerThumbnail)
+        } else {
+            metadata.artworkUri?.let { updateThumbnailAsync(it) }
+        }
 
         initializeSeekBar()
     }
