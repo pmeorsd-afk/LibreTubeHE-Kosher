@@ -170,6 +170,8 @@ object NavigationHelper {
      * Open a large, zoomable image preview
      */
     fun openImagePreview(context: Context, url: String) {
+        if (KosherMode.ENABLED) return
+
         val intent = Intent(context, ZoomableImageActivity::class.java)
         intent.putExtra(IntentData.bitmapUrl, url)
         context.startActivity(intent)

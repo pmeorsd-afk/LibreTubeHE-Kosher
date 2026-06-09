@@ -23,6 +23,7 @@ import com.github.libretube.extensions.formatShort
 import com.github.libretube.extensions.toastFromMainDispatcher
 import com.github.libretube.helpers.ClipboardHelper
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.ui.adapters.VideosAdapter
 import com.github.libretube.ui.base.DynamicLayoutManagerFragment
@@ -185,18 +186,23 @@ class ChannelFragment : Fragment(R.layout.fragment_channel) {
         ImageHelper.loadImage(response.bannerUrl, binding.channelBanner)
         ImageHelper.loadImage(response.avatarUrl, binding.channelImage, true)
 
-        binding.channelImage.setOnClickListener {
-            NavigationHelper.openImagePreview(
-                requireContext(),
-                response.avatarUrl ?: return@setOnClickListener
-            )
-        }
+        if (KosherMode.ENABLED) {
+            binding.channelImage.isClickable = false
+            binding.channelBanner.isClickable = false
+        } else {
+            binding.channelImage.setOnClickListener {
+                NavigationHelper.openImagePreview(
+                    requireContext(),
+                    response.avatarUrl ?: return@setOnClickListener
+                )
+            }
 
-        binding.channelBanner.setOnClickListener {
-            NavigationHelper.openImagePreview(
-                requireContext(),
-                response.bannerUrl ?: return@setOnClickListener
-            )
+            binding.channelBanner.setOnClickListener {
+                NavigationHelper.openImagePreview(
+                    requireContext(),
+                    response.bannerUrl ?: return@setOnClickListener
+                )
+            }
         }
 
         channelContentAdapter = ChannelContentAdapter(

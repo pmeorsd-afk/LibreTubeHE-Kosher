@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.github.libretube.constants.IntentData
 import com.github.libretube.databinding.ActivityZoomableImageBinding
 import com.github.libretube.helpers.ImageHelper
+import com.github.libretube.helpers.KosherMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,6 +21,11 @@ class ZoomableImageActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (KosherMode.ENABLED) {
+            finish()
+            return
+        }
 
         val binding = ActivityZoomableImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
