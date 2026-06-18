@@ -37,23 +37,30 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/kosher_version"
-                android:textColor="@android:color/white"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_volume_up"
+                app:tint="@color/kosher_primary"
+                android:contentDescription="@null"
+                android:layout_marginBottom="16dp" />
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_equalizer"
+                app:tint="@color/kosher_primary"
+                android:contentDescription="@null"
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="@string/kosher_audio_only_notice"
-                android:textColor="#D8D8D8"
-                android:textSize="15sp" />
+                android:text="גרסה כשרה — השמעת אודיו בלבד"
+                android:textColor="@color/kosher_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <androidx.media3.ui.SubtitleView android:id="@id/exo_subtitles"

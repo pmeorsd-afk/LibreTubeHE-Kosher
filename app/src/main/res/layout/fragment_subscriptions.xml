@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_kosher_home_gradient"
     tools:context=".ui.fragments.SubscriptionsFragment">
 
     <com.google.android.material.loadingindicator.LoadingIndicator
@@ -34,6 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginHorizontal="10dp"
+            android:textColor="@android:color/white"
             android:text="@string/emptyList"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -53,6 +55,7 @@
                 android:id="@+id/subscriptions_app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 app:liftOnScroll="false">
 
                 <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -70,10 +73,14 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/subscriptions_channels"
                             android:layout_width="match_parent"
-                            android:layout_height="82dp"
+                            android:layout_height="88dp"
                             android:clipToPadding="false"
                             android:orientation="horizontal"
                             android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:background="@drawable/bg_glass_card"
                             android:visibility="gone"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             tools:itemCount="8"
@@ -131,22 +138,22 @@
 
                                 <com.google.android.material.chip.Chip
                                     android:id="@+id/subs_chip_all"
-                                    style="@style/ElevatedFilterChip"
+                                    style="@style/KosherGlassChip"
                                     android:text="@string/all" />
 
                                 <com.google.android.material.chip.Chip
                                     android:id="@+id/subs_chip_today"
-                                    style="@style/ElevatedFilterChip"
+                                    style="@style/KosherGlassChip"
                                     android:text="@string/subscriptions_today" />
 
                                 <com.google.android.material.chip.Chip
                                     android:id="@+id/subs_chip_videos"
-                                    style="@style/ElevatedFilterChip"
+                                    style="@style/KosherGlassChip"
                                     android:text="@string/subscriptions_videos" />
 
                                 <com.google.android.material.chip.Chip
                                     android:id="@+id/subs_chip_shorts"
-                                    style="@style/ElevatedFilterChip"
+                                    style="@style/KosherGlassChip"
                                     android:text="@string/subscriptions_shorts" />
 
                             </com.google.android.material.chip.ChipGroup>
@@ -187,12 +194,12 @@
 
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_all"
-                                        style="@style/ElevatedFilterChip"
+                                        style="@style/KosherGlassChip"
                                         android:text="@string/all" />
 
                                     <com.google.android.material.chip.Chip
                                         android:id="@+id/chip_ungrouped"
-                                        style="@style/ElevatedFilterChip"
+                                        style="@style/KosherGlassChip"
                                         android:text="@string/ungrouped_channels" />
 
                                 </com.google.android.material.chip.ChipGroup>
@@ -217,6 +224,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="2dp"
+                                app:indicatorColor="@color/kosher_primary"
+                                app:trackColor="#30FFFFFF"
                                 tools:progress="70" />
 
                             <LinearLayout
@@ -228,12 +237,15 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
+                                    android:textColor="@android:color/white"
                                     android:text="@string/updating_feed" />
 
                                 <TextView
                                     android:id="@+id/feed_progress_text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:textColor="@color/kosher_primary"
+                                    android:textStyle="bold"
                                     tools:text="5/20" />
 
                             </LinearLayout>

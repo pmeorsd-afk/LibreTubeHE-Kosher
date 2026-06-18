@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_kosher_home_gradient"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -25,6 +26,7 @@
             android:layout_marginHorizontal="10dp"
             android:gravity="center"
             android:text="@string/history_empty"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -37,7 +39,8 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/watch_history_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/watch_history_collapsing_tb"
@@ -56,14 +59,14 @@
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_continue"
-                        style="@style/Widget.Material3.Chip.Filter"
+                        style="@style/KosherGlassChip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/continue_watching" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_finished"
-                        style="@style/Widget.Material3.Chip.Filter"
+                        style="@style/KosherGlassChip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/finished" />

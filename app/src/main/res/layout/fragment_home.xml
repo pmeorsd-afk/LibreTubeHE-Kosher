@@ -3,17 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_kosher_home_gradient">
 
     <com.github.libretube.ui.views.CustomSwipeToRefresh
         android:id="@+id/refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <ScrollView
             android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:visibility="gone"
             tools:visibility="visible"
             android:scrollbars="none"
@@ -267,26 +268,10 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <FrameLayout
-            android:layout_width="72dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="94dp"
-            android:background="@drawable/bg_youtube_logo_red">
-
-            <ImageView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_play_filled"
-                app:tint="@android:color/white" />
-
-        </FrameLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="150dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -297,7 +282,8 @@
                 android:background="@drawable/bg_home_icon_circle"
                 android:contentDescription="@string/category"
                 android:padding="9dp"
-                android:src="@drawable/ic_compass" />
+                android:src="@drawable/ic_compass"
+                app:tint="@android:color/white" />
 
             <EditText
                 android:id="@+id/starter_search_input"
@@ -314,8 +300,8 @@
                 android:paddingHorizontal="18dp"
                 android:singleLine="true"
                 android:textAlignment="viewStart"
-                android:textColor="?android:textColorPrimary"
-                android:textColorHint="?android:textColorSecondary"
+                android:textColor="@android:color/white"
+                android:textColorHint="#B3FFFFFF"
                 android:textDirection="rtl"
                 android:textSize="16sp" />
 
@@ -326,7 +312,8 @@
                 android:background="@drawable/bg_home_icon_circle"
                 android:contentDescription="@string/home_voice_search"
                 android:padding="9dp"
-                android:src="@drawable/ic_mic" />
+                android:src="@drawable/ic_mic"
+                app:tint="@android:color/white" />
 
         </LinearLayout>
 
@@ -335,37 +322,103 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="48dp"
             android:layout_marginTop="46dp"
-            app:cardBackgroundColor="?android:colorBackground"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="8dp"
-            app:strokeColor="@android:color/transparent">
+            app:cardElevation="0dp"
+            app:cardCornerRadius="16dp"
+            app:strokeWidth="0dp"
+            android:backgroundTint="@android:color/transparent">
 
+            <!-- Card Background drawable is bg_glass_card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_glass_card"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp"
-                android:paddingVertical="22dp">
+                android:paddingVertical="26dp">
+
+                <!-- Equalizer container -->
+                <LinearLayout
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/bg_glass_equalizer_container"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <!-- Custom Equalizer wave bars -->
+                    <View
+                        android:layout_width="3.5dp"
+                        android:layout_height="18dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:background="@color/kosher_primary" />
+
+                    <View
+                        android:layout_width="3.5dp"
+                        android:layout_height="28dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:background="@color/kosher_primary" />
+
+                    <View
+                        android:layout_width="3.5dp"
+                        android:layout_height="22dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:background="@color/kosher_primary" />
+
+                    <View
+                        android:layout_width="3.5dp"
+                        android:layout_height="25dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:background="@color/kosher_primary" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/home_start_title"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="24sp"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:lineSpacingExtra="2dp"
                     android:text="@string/home_start_subtitle"
-                    android:textColor="?android:textColorSecondary"
+                    android:textColor="#B3FFFFFF"
                     android:textSize="14sp" />
+
+                <!-- Green Privacy Pill -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/bg_glass_privacy"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="7dp">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginEnd="6dp"
+                        android:src="@drawable/ic_locked"
+                        app:tint="#10B981" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="פרטיות מלאה • ללא מעקב"
+                        android:textColor="#10B981"
+                        android:textSize="11.5sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -384,178 +437,610 @@
 
         <LinearLayout
             android:id="@+id/category_panel"
-            android:layout_width="300dp"
+            android:layout_width="320dp"
             android:layout_height="match_parent"
             android:layout_gravity="right|top"
             android:layoutDirection="rtl"
             android:background="@drawable/bg_home_category_panel"
             android:elevation="12dp"
             android:orientation="vertical"
-            android:paddingTop="24dp">
+            android:paddingTop="24dp"
+            android:paddingHorizontal="12dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="#667C3AED">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_compass"
+                        app:tint="#e9d5ff" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LibreKosher"
+                        android:textColor="@android:color/white"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="v2.4.1 · פרטיות מלאה"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/category_close_btn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_home_icon_circle"
+                    android:src="@drawable/ic_close"
+                    android:contentDescription="@string/close"
+                    app:tint="#80FFFFFF" />
+
+            </LinearLayout>
+
+            <!-- User profile card/pill -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_glass_card"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:text="א"
+                    android:textColor="#c4b5fd"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_home_icon_circle" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="אנונימי לחלוטין"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="אין חשבון · פרטיות מקסימלית"
+                        android:textColor="#9CFFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <!-- Active green dot -->
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_home_icon_circle"
+                    android:backgroundTint="#34d399" />
+
+            </LinearLayout>
+
+            <!-- Content section label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginBottom="6dp"
+                android:text="ערוצי תוכן"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Category Music -->
+            <LinearLayout
                 android:id="@+id/category_music"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
-                android:paddingHorizontal="28dp">
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/category_music_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:scaleType="fitCenter"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
                     android:src="@drawable/ic_music_note"
-                    app:tint="?android:textColorPrimary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:tint="@android:color/white" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="18dp"
-                    android:gravity="end"
-                    android:text="@string/libre_music"
-                    android:textColor="?android:textColorPrimary"
-                    android:textDirection="rtl"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/category_music_icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/libre_music"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="מוזיקה בסטרימינג"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:rotation="180"
+                    app:tint="#40FFFFFF" />
+
+            </LinearLayout>
+
+            <!-- Category Games -->
+            <LinearLayout
                 android:id="@+id/category_games"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingHorizontal="28dp">
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/category_games_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
                     android:src="@drawable/ic_gamepad"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:tint="@android:color/white" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="18dp"
-                    android:gravity="end"
-                    android:text="@string/category_games"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/category_games_icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/category_games"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ערוצי גיימינג"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:rotation="180"
+                    app:tint="#40FFFFFF" />
+
+            </LinearLayout>
+
+            <!-- Category News -->
+            <LinearLayout
                 android:id="@+id/category_news"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingHorizontal="28dp">
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/category_news_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
                     android:src="@drawable/ic_newspaper"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:tint="@android:color/white" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="18dp"
-                    android:gravity="end"
-                    android:text="@string/category_news"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/category_news_icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/category_news"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="עדכונים שוטפים"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:rotation="180"
+                    app:tint="#40FFFFFF" />
+
+            </LinearLayout>
+
+            <!-- Category Sports -->
+            <LinearLayout
                 android:id="@+id/category_sports"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingHorizontal="28dp">
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/category_sports_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
                     android:src="@drawable/ic_trophy"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:tint="@android:color/white" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="18dp"
-                    android:gravity="end"
-                    android:text="@string/category_sports"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/category_sports_icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/category_sports"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="שידורים וסיקור"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:rotation="180"
+                    app:tint="#40FFFFFF" />
+
+            </LinearLayout>
+
+            <!-- Category Podcasts -->
+            <LinearLayout
                 android:id="@+id/category_podcasts"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingHorizontal="28dp">
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/category_podcasts_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
                     android:src="@drawable/ic_podcast"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:tint="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/category_podcasts"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="תכניות ורדיו"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:rotation="180"
+                    app:tint="#40FFFFFF" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="8dp"
+                android:background="#1AFFFFFF" />
+
+            <!-- General Section Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginBottom="6dp"
+                android:text="כללי"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <!-- Privacy Settings Button -->
+            <LinearLayout
+                android:id="@+id/category_settings_privacy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="6dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_locked"
+                    app:tint="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="הגדרות פרטיות"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="בקרת הרשאות"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- App Settings Button -->
+            <LinearLayout
+                android:id="@+id/category_settings_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="6dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="הגדרות אפליקציה"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="תצוגה, שמע, שפה"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- About Button -->
+            <LinearLayout
+                android:id="@+id/category_settings_about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="6dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_glass_card"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_info"
+                    app:tint="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="אודות LibreKosher"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="רישיון MIT · קוד פתוח"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Privacy Tip Footer -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="#80102B30"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:orientation="horizontal">
+
+                <!-- Green dot -->
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_home_icon_circle"
+                    android:backgroundTint="#34d399" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="18dp"
-                    android:gravity="end"
-                    android:text="@string/category_podcasts"
-                    android:textColor="?android:textColorPrimary"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/category_podcasts_icon"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:text="פרטיות מלאה — ללא מעקב, ללא Google"
+                    android:textColor="#D834D399"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

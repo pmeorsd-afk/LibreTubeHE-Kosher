@@ -115,6 +115,10 @@ class LibraryFragment : DynamicLayoutManagerFragment(R.layout.fragment_library) 
             CreatePlaylistDialog()
                 .show(childFragmentManager, CreatePlaylistDialog::class.java.name)
         }
+        binding.btnNewPlaylistEmpty.setOnClickListener {
+            CreatePlaylistDialog()
+                .show(childFragmentManager, CreatePlaylistDialog::class.java.name)
+        }
 
         val sortOptions = resources.getStringArray(R.array.playlistSortingOptions)
         val sortOptionValues = resources.getStringArray(R.array.playlistSortingOptionsValues)

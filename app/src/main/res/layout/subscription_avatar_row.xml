@@ -16,6 +16,9 @@
         android:id="@+id/subscription_avatar"
         android:layout_width="54dp"
         android:layout_height="54dp"
+        android:padding="2dp"
+        app:strokeColor="@color/kosher_primary"
+        app:strokeWidth="1.5dp"
         app:shapeAppearance="@style/CircleImageView"
         tools:srcCompat="@mipmap/ic_launcher" />
 
@@ -27,7 +30,7 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:textColor="?android:textColorSecondary"
+        android:textColor="@android:color/white"
         android:textSize="11sp"
         tools:text="Channel" />
 

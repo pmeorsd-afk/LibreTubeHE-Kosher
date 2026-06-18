@@ -152,7 +152,7 @@
             android:layout_marginHorizontal="10dp"
             android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_play"
-            app:tint="@android:color/white" />
+            app:tint="@color/kosher_primary" />
 
         <ImageView
             android:id="@+id/skip_next"
@@ -320,8 +320,8 @@
                 android:layout_height="match_parent"
                 android:paddingTop="6dp"
                 app:bar_height="2dp"
-                app:played_color="?attr/colorSecondary"
-                app:scrubber_color="?attr/colorSecondary"
+                app:played_color="@color/kosher_primary"
+                app:scrubber_color="@color/kosher_primary"
                 app:scrubber_dragged_size="16dp"
                 app:scrubber_enabled_size="12dp"
                 app:touch_target_height="35dp" />

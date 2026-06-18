@@ -27,8 +27,12 @@ class UpdateAvailableDialog : DialogFragment() {
             .setTitle(R.string.update_available)
             .setMessage(changelog)
             .setPositiveButton(R.string.download) { _, _ ->
-                releaseUrl?.let {
-                    startActivity(Intent(Intent.ACTION_VIEW, it.toUri()))
+                releaseUrl?.let { url ->
+                    if (url.startsWith("UC") || url.contains("/channel/") || url.contains("/c/") || url.contains("/user/")) {
+                        com.github.libretube.helpers.NavigationHelper.navigateChannel(requireContext(), url)
+                    } else {
+                        startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+                    }
                 }
             }
             .setNegativeButton(R.string.tooltip_dismiss, null)

@@ -31,6 +31,8 @@ class HomeViewModel : ViewModel() {
     private val sections get() = listOf(feed, continueWatching)
 
     private var loadHomeJob: Job? = null
+    private var currentSeedOffset = 0
+    private var hasMoreSeeds = true
 
     fun loadHomeFeed(
         context: Context,
@@ -38,6 +40,8 @@ class HomeViewModel : ViewModel() {
         visibleItems: Set<String>,
         onUnusualLoadTime: () -> Unit
     ) {
+        currentSeedOffset = 0
+        hasMoreSeeds = true
         isLoading.value = true
 
         loadHomeJob?.cancel()
@@ -57,6 +61,27 @@ class HomeViewModel : ViewModel() {
                     onUnusualLoadTime.invoke()
                 }
             }
+        }
+    }
+
+    fun loadMoreHomeFeed(subscriptionsViewModel: SubscriptionsViewModel) {
+        if (isLoading.value == true || !hasMoreSeeds) return
+        isLoading.value = true
+        viewModelScope.launch {
+            val nextOffset = currentSeedOffset + RELATED_SEED_LIMIT
+            val moreVideos = withContext(Dispatchers.IO) {
+                loadPersonalizedRelatedFeed(nextOffset)
+            }
+            if (moreVideos.isEmpty()) {
+                hasMoreSeeds = false
+                isLoading.value = false
+                return@launch
+            }
+            currentSeedOffset = nextOffset
+            val currentFeed = feed.value.orEmpty()
+            val newFeed = (currentFeed + moreVideos).distinctBy { it.url.orEmpty() }
+            feed.value = newFeed
+            isLoading.value = false
         }
     }
 
@@ -105,13 +130,14 @@ class HomeViewModel : ViewModel() {
         }.homeVideosOnly()
     }
 
-    private suspend fun loadPersonalizedRelatedFeed(): List<StreamItem> {
+    private suspend fun loadPersonalizedRelatedFeed(offset: Int = 0): List<StreamItem> {
         val seeds = (
-            DatabaseHelper.getWatchHistoryPage(1, RELATED_SEED_LIMIT) +
-                FlowHistoryBridge.getWatchHistoryPage(1, RELATED_SEED_LIMIT)
+            DatabaseHelper.getWatchHistoryPage(1, offset + RELATED_SEED_LIMIT) +
+                FlowHistoryBridge.getWatchHistoryPage(1, offset + RELATED_SEED_LIMIT)
             )
             .distinctBy { it.videoId }
             .filter { !it.isLive && !it.isShort && it.videoId.isNotBlank() }
+            .drop(offset)
             .take(RELATED_SEED_LIMIT)
 
         if (seeds.isEmpty()) return emptyList()

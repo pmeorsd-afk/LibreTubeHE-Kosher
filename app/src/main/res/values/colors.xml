@@ -1,5 +1,15 @@
 <resources>
 
+    <!-- Figma Red & Glass Design System Colors -->
+    <color name="kosher_background">#0A090D</color>
+    <color name="kosher_primary">#FF0000</color>
+    <color name="kosher_card_bg">#0EFFFFFF</color>
+    <color name="kosher_card_stroke">#1AFFFFFF</color>
+    <color name="kosher_chip_active_bg">#26FF0000</color>
+    <color name="kosher_chip_active_stroke">#80FF0000</color>
+    <color name="kosher_white_translucent">#80FFFFFF</color>
+    <color name="kosher_purple_glow">#807C3AED</color>
+
     <color name="duration_background_color">#AA000000</color>
     <color name="duration_text_color">#EEFFFFFF</color>
     <color name="shortcut_color">#0061A6</color>

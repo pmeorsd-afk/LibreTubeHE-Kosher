@@ -88,9 +88,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/rounded_ripple"
+                android:background="@drawable/bg_glass_card"
+                app:backgroundTint="@null"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="8dp">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/player_channelImage"
@@ -116,6 +117,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:textColor="@android:color/white"
                         android:textSize="15sp" />
 
                     <TextView
@@ -124,6 +126,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:textColor="@color/kosher_white_translucent"
                         android:textSize="11sp"
                         tools:text="2.5M subscribers" />
 
@@ -135,7 +138,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="@string/subscribe"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_glass_button_active"
+                    app:backgroundTint="@null"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -147,9 +153,11 @@
                 android:layout_marginVertical="10dp"
                 android:text="@string/comments"
                 android:textAlignment="viewStart"
-                android:textColor="?colorPrimary"
+                android:background="@drawable/bg_glass_card"
+                app:backgroundTint="@null"
+                android:textColor="@color/kosher_primary"
                 app:drawableEndCompat="@drawable/ic_arrow_up_down"
-                app:drawableTint="?colorPrimary" />
+                app:drawableTint="@color/kosher_primary" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/related_rec_view"

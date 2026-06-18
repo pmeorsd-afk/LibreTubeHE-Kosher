@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_kosher_home_gradient"
     tools:context=".ui.fragments.LibraryFragment">
 
     <com.github.libretube.ui.views.CustomSwipeToRefresh
@@ -37,7 +38,11 @@
                         android:text="@string/watch_history"
                         android:textAlignment="viewStart"
                         android:textStyle="bold"
+                        android:background="@drawable/bg_glass_button_inactive"
+                        app:backgroundTint="@null"
+                        android:textColor="@android:color/white"
                         app:icon="@drawable/ic_time_outlined"
+                        app:iconTint="@android:color/white"
                         app:layout_constraintEnd_toStartOf="@id/downloads"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +59,11 @@
                         android:maxLines="1"
                         android:text="@string/downloads"
                         android:textStyle="bold"
+                        android:background="@drawable/bg_glass_button_inactive"
+                        app:backgroundTint="@null"
+                        android:textColor="@android:color/white"
                         app:icon="@drawable/ic_download"
+                        app:iconTint="@android:color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/watch_history"
                         app:layout_constraintTop_toTopOf="parent"
@@ -81,6 +90,7 @@
                             android:maxLines="1"
                             android:padding="8dp"
                             android:text="@string/playlists"
+                            android:textColor="@android:color/white"
                             android:textAlignment="viewStart"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -95,8 +105,11 @@
                             android:maxLines="1"
                             android:paddingHorizontal="10dp"
                             android:text="@string/creation_date"
+                            android:background="@drawable/bg_glass_button_inactive"
+                            android:textColor="@android:color/white"
                             android:tooltipText="@string/tooltip_sort"
                             app:icon="@drawable/ic_sort"
+                            app:iconTint="@android:color/white"
                             app:iconGravity="textEnd" />
 
                     </LinearLayout>
@@ -104,25 +117,49 @@
                     <LinearLayout
                         android:id="@+id/nothing_here"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="35dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginVertical="20dp"
+                        android:background="@drawable/bg_glass_card"
+                        android:padding="24dp"
                         android:orientation="vertical"
+                        android:gravity="center"
                         android:visibility="gone">
 
                         <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:layout_gravity="center"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:layout_marginBottom="16dp"
-                            android:src="@drawable/ic_list" />
+                            android:src="@drawable/ic_playlist"
+                            app:tint="#88FFFFFF" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/emptyList"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:text="אין כאן כלום."
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="לחץ על + כדי ליצור פלייליסט חדש"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="14sp"
+                            android:layout_marginBottom="16dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_new_playlist_empty"
+                            style="?materialButtonTonalStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_glass_button_inactive"
+                            android:textColor="@android:color/white"
+                            app:icon="@drawable/ic_add"
+                            app:iconTint="@android:color/white"
+                            android:text="פלייליסט חדש" />
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -145,6 +182,7 @@
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:text="@string/bookmarks"
+                        android:textColor="@android:color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -168,8 +206,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:backgroundTint="?attr/colorSecondary"
+        app:backgroundTint="@color/kosher_primary"
         app:srcCompat="@drawable/ic_add"
-        app:tint="?android:attr/colorBackground" />
+        app:tint="@android:color/white" />
 
 </FrameLayout>

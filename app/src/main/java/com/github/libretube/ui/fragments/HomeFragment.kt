@@ -139,6 +139,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         setupStarterHome()
         setupHomeCategories()
+
+        binding.scroll.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            val child = binding.scroll.getChildAt(0)
+            if (child != null) {
+                val diff = child.bottom - (binding.scroll.height + scrollY)
+                if (diff <= 400) {
+                    homeViewModel.loadMoreHomeFeed(subscriptionsViewModel)
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -325,6 +335,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.categoryNews.setOnClickListener { submitCategorySearch("חדשות") }
         binding.categorySports.setOnClickListener { submitCategorySearch("ספורט") }
         binding.categoryPodcasts.setOnClickListener { submitCategorySearch("פודקאסטים") }
+        
+        binding.categoryCloseBtn.setOnClickListener { closeCategoryPanel() }
+        binding.categorySettingsPrivacy.setOnClickListener {
+            closeCategoryPanel(animate = false)
+            val settingsIntent = Intent(context, SettingsActivity::class.java)
+            startActivity(settingsIntent)
+        }
+        binding.categorySettingsApp.setOnClickListener {
+            closeCategoryPanel(animate = false)
+            val settingsIntent = Intent(context, SettingsActivity::class.java)
+            startActivity(settingsIntent)
+        }
+        binding.categorySettingsAbout.setOnClickListener {
+            closeCategoryPanel(animate = false)
+            val aboutIntent = Intent(context, com.github.libretube.ui.activities.AboutActivity::class.java)
+            startActivity(aboutIntent)
+        }
     }
 
     private fun setupHomeCategories() {

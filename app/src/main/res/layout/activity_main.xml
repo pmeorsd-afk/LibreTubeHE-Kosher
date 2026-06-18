@@ -22,6 +22,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:titleTextColor="@android:color/white"
             app:menu="@menu/action_bar"
             app:title="@string/app_name" />
 
@@ -31,6 +33,10 @@
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#E60A090D"
+        app:elevation="0dp"
+        app:itemIconTint="@color/color_bottom_nav_icon"
+        app:itemTextColor="@color/color_bottom_nav_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

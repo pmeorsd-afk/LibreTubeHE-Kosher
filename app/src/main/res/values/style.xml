@@ -63,15 +63,18 @@
 
     </style>
 
-    <style name="PlayerActionsButton" parent="@style/Widget.Material3.Button.ElevatedButton">
+    <style name="PlayerActionsButton" parent="@style/Widget.Material3.Button">
 
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="iconGravity">textStart</item>
-        <item name="android:textColor">?colorPrimary</item>
-        <item name="iconTint">?colorPrimary</item>
+        <item name="android:background">@drawable/bg_glass_button_inactive</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="iconTint">@android:color/white</item>
+        <item name="android:stateListAnimator">@null</item>
 
     </style>
 
@@ -142,6 +145,15 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
 
+    </style>
+
+    <style name="KosherGlassChip" parent="Widget.Material3.Chip.Filter">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="chipBackgroundColor">@color/color_glass_chip_bg</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textColor">@color/color_glass_chip_text</item>
+        <item name="checkedIconVisible">false</item>
     </style>
 
     <style name="ItemRow">
