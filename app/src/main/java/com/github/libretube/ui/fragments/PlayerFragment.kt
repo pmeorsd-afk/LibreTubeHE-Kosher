@@ -722,12 +722,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
             switchToAudioMode()
         }
 
-<<<<<<< HEAD
-        binding.relPlayerPip.isVisible = !KosherMode.ENABLED &&
-            PictureInPictureCompat.isPictureInPictureAvailable(requireContext())
-=======
         binding.relPlayerPip.isVisible = isPipAvailable()
->>>>>>> v32.1
 
         binding.relPlayerPip.setOnClickListener {
             PictureInPictureCompat.enterPictureInPictureMode(requireActivity(), pipParams)

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.libretube.api.MediaServiceRepository
 import com.github.libretube.api.SubscriptionHelper
+import com.github.libretube.api.TrendingCategory
 import com.github.libretube.api.obj.StreamItem
 import com.github.libretube.db.DatabaseHelper
 import com.github.libretube.extensions.runSafely
@@ -83,12 +84,12 @@ class HomeViewModel : ViewModel() {
             if (moreVideos.isNotEmpty()) {
                 val currentFeed = feed.value.orEmpty()
                 val filteredNew = moreVideos.filter { item ->
-                    val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                    val id = extractVideoId(item)
                     id.isNotBlank() && !loadedVideoIds.contains(id) && !BlocklistHelper.isVideoBlocked(id)
                 }
 
                 filteredNew.forEach { item ->
-                    val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                    val id = extractVideoId(item)
                     if (id.isNotBlank()) loadedVideoIds.add(id)
                 }
 
@@ -101,11 +102,16 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    private fun extractVideoId(item: StreamItem): String {
+        val rawUrl = item.url ?: return ""
+        return rawUrl.toVideoIDFromUrl() ?: rawUrl.toID()
+    }
+
     private suspend fun loadFeed(subscriptionsViewModel: SubscriptionsViewModel) {
         runSafely(
             onSuccess = { videos ->
                 videos?.forEach { item ->
-                    val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                    val id = extractVideoId(item)
                     if (id.isNotBlank()) loadedVideoIds.add(id)
                 }
                 feed.updateIfChanged(videos)
@@ -139,7 +145,7 @@ class HomeViewModel : ViewModel() {
 
         val combined = (subFeed + initialPersonalized)
             .filter { item ->
-                val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                val id = extractVideoId(item)
                 id.isNotBlank() && !BlocklistHelper.isVideoBlocked(id)
             }
             .distinctBy { it.url.orEmpty() }
@@ -149,7 +155,7 @@ class HomeViewModel : ViewModel() {
             val fallback = loadTrendingFallback()
             return (combined + fallback)
                 .filter { item ->
-                    val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                    val id = extractVideoId(item)
                     id.isNotBlank() && !BlocklistHelper.isVideoBlocked(id)
                 }
                 .distinctBy { it.url.orEmpty() }
@@ -183,7 +189,7 @@ class HomeViewModel : ViewModel() {
 
         // 2. If history is exhausted, use existing loaded feed items as seeds (recommendation expansion)
         val candidateSeeds = feed.value.orEmpty()
-            .mapNotNull { it.url.toVideoIDFromUrl() ?: it.url?.toID() }
+            .map { extractVideoId(it) }
             .filter { it.isNotBlank() && !usedSeedVideoIds.contains(it) }
             .take(RELATED_SEED_LIMIT)
 
@@ -236,7 +242,7 @@ class HomeViewModel : ViewModel() {
                 .flatten()
                 .distinctBy { it.url.orEmpty() }
                 .filter { item ->
-                    val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                    val id = extractVideoId(item)
                     id.isNotBlank() && !loadedVideoIds.contains(id) && !BlocklistHelper.isVideoBlocked(id)
                 }
         }
@@ -246,10 +252,10 @@ class HomeViewModel : ViewModel() {
         return withContext(Dispatchers.IO) {
             runCatching {
                 MediaServiceRepository.instance
-                    .getTrending(region = "IL")
+                    .getTrending(region = "IL", category = TrendingCategory.MUSIC)
                     .homeVideosOnly()
                     .filter { item ->
-                        val id = item.url.toVideoIDFromUrl() ?: item.url.orEmpty().toID()
+                        val id = extractVideoId(item)
                         id.isNotBlank() && !loadedVideoIds.contains(id) && !BlocklistHelper.isVideoBlocked(id)
                     }
             }.getOrDefault(emptyList())
