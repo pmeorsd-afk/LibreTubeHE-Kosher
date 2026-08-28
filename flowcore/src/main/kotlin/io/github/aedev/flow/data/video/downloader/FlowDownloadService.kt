@@ -162,7 +162,8 @@ class FlowDownloadService : Service() {
             videoCodec: String? = null,
             audioExtension: String? = null,
             audioMimeType: String? = null,
-            isMusic: Boolean = false
+            isMusic: Boolean = false,
+            contentLength: Long = -1L
         ) {
             val intent = Intent(context, FlowDownloadService::class.java).apply {
                 action = ACTION_START_DOWNLOAD
@@ -177,6 +178,7 @@ class FlowDownloadService : Service() {
                 putExtra("video_user_agent", userAgent)
                 putExtra(EXTRA_AUDIO_ONLY, audioOnly)
                 putExtra(EXTRA_IS_MUSIC, isMusic)
+                putExtra(EXTRA_CONTENT_LENGTH, contentLength)
                 if (videoCodec != null) putExtra(EXTRA_VIDEO_CODEC, videoCodec)
                 if (audioExtension != null) putExtra(EXTRA_AUDIO_EXTENSION, audioExtension)
                 if (audioMimeType != null) putExtra(EXTRA_AUDIO_MIME_TYPE, audioMimeType)
