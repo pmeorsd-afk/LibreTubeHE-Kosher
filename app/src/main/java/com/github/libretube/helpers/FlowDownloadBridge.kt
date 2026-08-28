@@ -8,6 +8,7 @@ import com.github.libretube.db.obj.DownloadItem
 import com.github.libretube.db.obj.DownloadPlaylist
 import com.github.libretube.db.obj.DownloadPlaylistVideosCrossRef
 import com.github.libretube.enums.FileType
+import com.github.libretube.parcelable.DownloadData
 import io.github.aedev.flow.data.download.FlowDownloadCallbacks
 import io.github.aedev.flow.data.download.FlowPlaylistTrackInfo
 import io.github.aedev.flow.data.local.AppDatabase
@@ -23,6 +24,24 @@ object FlowDownloadBridge {
     private const val TAG = "FlowDownloadBridge"
 
     fun init(context: Context) {
+        FlowDownloadCallbacks.onDownloadRequested = { videoId ->
+            try {
+                val downloadData = DownloadData(
+                    videoId = videoId,
+                    videoFormat = null,
+                    videoQuality = null,
+                    audioFormat = "m4a",
+                    audioQuality = null,
+                    audioLanguage = null,
+                    subtitleCode = null
+                )
+                DownloadHelper.startDownloadService(context, downloadData)
+                Log.d(TAG, "Triggered native audio download for $videoId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start native download for $videoId", e)
+            }
+        }
+
         FlowDownloadCallbacks.onDownloadCompleted = { videoId, title, channelName, durationSec, filePath, fileSize, isAudio, thumbnailUrl ->
             CoroutineScope(Dispatchers.IO).launch {
                 try {
@@ -125,23 +144,6 @@ object FlowDownloadBridge {
 
         for (track in tracks) {
             if (track.videoId.isNotBlank()) {
-                if (!Database.downloadDao().exists(track.videoId)) {
-                    val download = Download(
-                        videoId = track.videoId,
-                        title = track.title.ifBlank { "Track" },
-                        description = "",
-                        uploader = track.artist,
-                        duration = track.durationSec.takeIf { it > 0 },
-                        uploadDate = null,
-                        thumbnailPath = null,
-                        uploaderUrl = null,
-                        views = 0,
-                        likes = 0,
-                        dislikes = -1
-                    )
-                    Database.downloadDao().insertDownload(download)
-                }
-
                 val crossRef = DownloadPlaylistVideosCrossRef(
                     playlistId = playlistId,
                     videoId = track.videoId

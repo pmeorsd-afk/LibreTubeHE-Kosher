@@ -259,47 +259,13 @@ class MusicPlaylistsViewModel @Inject constructor(
                     e.printStackTrace()
                 }
 
-                if (totalTracks == 0) {
-                     _isDownloadingPlaylist.value = false
-                     return@launch
-                }
-
-                var successCount = 0
-                val processedCount = java.util.concurrent.atomic.AtomicInteger(0)
-                
-                val semaphore = kotlinx.coroutines.sync.Semaphore(3)
-                
-                tracks.map { track ->
-                    async {
-                        val isSuccess = semaphore.withPermit {
-                            _currentDownloadingTrack.value = track.title
-                            var currentTrack = track
-                            
-                            try {
-                                if (currentTrack.duration == 0) {
-                                    try {
-                                        val duration = YouTubeMusicService.fetchVideoDuration(track.videoId)
-                                        if (duration > 0) {
-                                            currentTrack = currentTrack.copy(duration = duration)
-                                        }
-                                    } catch (e: Exception) {
-                                    }
-                                }
-
-                                val result = downloadManager.downloadTrack(currentTrack)
-                                return@withPermit result.isSuccess
-                            } catch (e: Exception) {
-                                Log.e("MusicViewModel", "Failed to download track ${track.title}", e)
-                            }
-                            false
-                        }
-                        
-                        val currentProcessed = processedCount.incrementAndGet()
-                        _playlistDownloadProgress.value = currentProcessed.toFloat() / totalTracks
-                        
-                        isSuccess
+                for (track in tracks) {
+                    try {
+                        io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadRequested?.invoke(track.videoId)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                }.awaitAll().count { it }
+                }
                 
                 successCount = tracks.size 
 

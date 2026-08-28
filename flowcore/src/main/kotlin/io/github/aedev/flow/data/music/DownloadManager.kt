@@ -136,6 +136,10 @@ class DownloadManager @Inject constructor(
     
     suspend fun downloadTrack(track: MusicTrack): Result<String> = withContext(Dispatchers.IO) {
         try {
+            if (io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadRequested != null) {
+                io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadRequested?.invoke(track.videoId)
+                return@withContext Result.success(track.videoId)
+            }
             if (isDownloaded(track.videoId) || hasActiveFileDownload(track.videoId)) {
                 return@withContext Result.success(track.videoId)
             }

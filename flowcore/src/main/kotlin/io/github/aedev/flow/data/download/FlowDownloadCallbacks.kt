@@ -9,6 +9,8 @@ data class FlowPlaylistTrackInfo(
 )
 
 object FlowDownloadCallbacks {
+    var onDownloadRequested: ((videoId: String) -> Unit)? = null
+
     var onDownloadCompleted: ((
         videoId: String,
         title: String,

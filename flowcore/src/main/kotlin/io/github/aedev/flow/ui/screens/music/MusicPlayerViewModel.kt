@@ -562,8 +562,11 @@ class MusicPlayerViewModel @Inject constructor(
             }
             
             try {
-                downloadManager.downloadTrack(trackToDownload)
-                
+                if (io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadRequested != null) {
+                    io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadRequested?.invoke(trackToDownload.videoId)
+                } else {
+                    downloadManager.downloadTrack(trackToDownload)
+                }
             } catch (e: Exception) {
                 android.util.Log.e("MusicDownload", "Download start exception", e)
                 withContext(kotlinx.coroutines.Dispatchers.Main) {

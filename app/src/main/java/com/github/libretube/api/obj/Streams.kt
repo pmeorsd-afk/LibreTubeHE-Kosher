@@ -71,7 +71,14 @@ data class Streams(
         if (!audioQuality.isNullOrEmpty() && !audioFormat.isNullOrEmpty()) {
             val stream = audioStreams.find {
                 it.quality == audioQuality && it.format == audioFormat && it.audioTrackLocale == audioTrackLocale
-            }
+            } ?: audioStreams.find {
+                it.format?.equals(audioFormat, ignoreCase = true) == true
+            } ?: audioStreams.firstOrNull()
+            stream?.toDownloadItem(FileType.AUDIO, id)?.let { items.add(it) }
+        } else if (audioFormat != null || (KosherMode.ENABLED && videoFormat == null)) {
+            val stream = audioStreams.firstOrNull { it.format?.lowercase() == "m4a" }
+                ?: audioStreams.firstOrNull { it.format?.lowercase() == "opus" || it.format?.lowercase() == "webm" }
+                ?: audioStreams.firstOrNull()
             stream?.toDownloadItem(FileType.AUDIO, id)?.let { items.add(it) }
         }
 

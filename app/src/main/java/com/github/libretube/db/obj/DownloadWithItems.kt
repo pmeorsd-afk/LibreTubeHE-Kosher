@@ -47,11 +47,19 @@ data class DownloadWithItems(
 fun List<DownloadWithItems>.filterByTab(tab: DownloadTab) = filter { dl ->
     when (tab) {
         DownloadTab.AUDIO -> {
-            dl.downloadItems.any { it.type == FileType.AUDIO } && dl.downloadItems.none { it.type == FileType.VIDEO }
+            if (com.github.libretube.helpers.KosherMode.ENABLED) {
+                dl.downloadItems.none { it.type == FileType.VIDEO }
+            } else {
+                (dl.downloadItems.any { it.type == FileType.AUDIO } || dl.downloadItems.isEmpty()) && dl.downloadItems.none { it.type == FileType.VIDEO }
+            }
         }
 
         DownloadTab.VIDEO -> {
-            dl.downloadItems.any { it.type == FileType.VIDEO } || dl.downloadItems.isEmpty()
+            if (com.github.libretube.helpers.KosherMode.ENABLED) {
+                false
+            } else {
+                dl.downloadItems.any { it.type == FileType.VIDEO }
+            }
         }
 
         DownloadTab.PLAYLIST -> throw IllegalArgumentException("not applicable for playlist tab, playlistId must be passed")
