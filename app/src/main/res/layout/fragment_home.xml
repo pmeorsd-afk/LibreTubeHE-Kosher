@@ -115,6 +115,14 @@
                     app:spanCount="2"
                     tools:visibility="visible" />
 
+                <ProgressBar
+                    android:id="@+id/pagination_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="12dp"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:id="@+id/watchingTV"
                     android:layout_width="match_parent"

@@ -101,6 +101,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             feed.observe(viewLifecycleOwner, ::showFeed)
             continueWatching.observe(viewLifecycleOwner, ::showContinueWatching)
             isLoading.observe(viewLifecycleOwner, ::updateLoading)
+            isPaging.observe(viewLifecycleOwner) { isPaging ->
+                binding.paginationProgress.isVisible = isPaging
+            }
         }
 
         binding.featuredTV.setOnClickListener {
@@ -144,7 +147,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val child = binding.scroll.getChildAt(0)
             if (child != null) {
                 val diff = child.bottom - (binding.scroll.height + scrollY)
-                if (diff <= 400) {
+                if (diff <= 800) {
                     homeViewModel.loadMoreHomeFeed(subscriptionsViewModel)
                 }
             }
@@ -195,9 +198,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.featuredTV.isGone = true
         makeVisible(binding.featuredRV, binding.homeCategoryContainer)
-        val feedVideos = streamItems.take(HOME_FEED_VISIBLE_LIMIT)
 
-        feedAdapter.submitList(feedVideos)
+        feedAdapter.submitList(streamItems)
         updateStarterVisibility()
     }
 

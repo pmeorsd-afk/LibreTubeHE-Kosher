@@ -36,8 +36,8 @@ android {
         applicationId = "com.github.libretube.kosher"
         minSdk = 26
         targetSdk = 36
-        versionCode = 72
-        versionName = "32.1"
+        versionCode = 73
+        versionName = "32.1-kosher"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "app_name", "LibreKosher")
     }
