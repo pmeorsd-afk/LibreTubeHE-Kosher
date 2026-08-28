@@ -158,8 +158,9 @@ class DownloadManager @Inject constructor(
                 streamUrl
             }
 
-            val extension = "mp3"
-            val mimeType = "audio/mpeg"
+            val rawMimeType = playbackData.format.mimeType ?: "audio/mp4"
+            val extension = if (rawMimeType.contains("webm") || rawMimeType.contains("opus")) "webm" else "m4a"
+            val mimeType = if (extension == "webm") "audio/webm" else "audio/mp4"
             val quality = playbackData.format.averageBitrate
                 ?.takeIf { it > 0 }
                 ?.let { "${it / 1000}kbps" }
@@ -189,8 +190,9 @@ class DownloadManager @Inject constructor(
                 audioOnly = true,
                 userAgent = playbackData.usedClient.userAgent,
                 audioExtension = extension,
-                audioMimeType = mimeType.ifBlank { "audio/mp4" },
-                isMusic = true
+                audioMimeType = mimeType,
+                isMusic = true,
+                contentLength = contentLength ?: -1L
             )
 
             Result.success(track.videoId)

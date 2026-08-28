@@ -83,6 +83,7 @@ class FlowDownloadService : Service() {
         const val EXTRA_AUDIO_EXTENSION = "audio_extension"
         const val EXTRA_AUDIO_MIME_TYPE = "audio_mime_type"
         const val EXTRA_IS_MUSIC = "is_music"
+        const val EXTRA_CONTENT_LENGTH = "content_length"
 
         /**
          * Optional video codec hint (e.g. "vp9", "vp8", "h264").
@@ -116,7 +117,8 @@ class FlowDownloadService : Service() {
             videoCodec: String? = null,
             audioExtension: String? = null,
             audioMimeType: String? = null,
-            isMusic: Boolean = false
+            isMusic: Boolean = false,
+            contentLength: Long = -1L
         ) {
             val intent = Intent(context, FlowDownloadService::class.java).apply {
                 action = ACTION_START_DOWNLOAD
@@ -129,6 +131,7 @@ class FlowDownloadService : Service() {
                 putExtra("video_duration", video.duration)
                 putExtra(EXTRA_AUDIO_ONLY, audioOnly)
                 putExtra(EXTRA_IS_MUSIC, isMusic)
+                putExtra(EXTRA_CONTENT_LENGTH, contentLength)
                 putExtra(EXTRA_SABR_STREAMING_URL, sabrStreamingUrl)
                 putExtra(EXTRA_SABR_AUDIO_ITAG, audioItag)
                 putExtra(EXTRA_SABR_AUDIO_LMT, audioLmt)
@@ -246,6 +249,7 @@ class FlowDownloadService : Service() {
                 val audioExtension = intent.getStringExtra(EXTRA_AUDIO_EXTENSION)
                 val audioMimeType = intent.getStringExtra(EXTRA_AUDIO_MIME_TYPE)
                 val isMusic = intent.getBooleanExtra(EXTRA_IS_MUSIC, false)
+                val contentLength = intent.getLongExtra(EXTRA_CONTENT_LENGTH, -1L)
 
                 val sabrStreamingUrl = intent.getStringExtra(EXTRA_SABR_STREAMING_URL)
                 val sabrAudioItag = intent.getIntExtra(EXTRA_SABR_AUDIO_ITAG, 0)
@@ -261,6 +265,7 @@ class FlowDownloadService : Service() {
                     videoId, title, url, audioUrl, quality,
                     thumbnail, channel, duration, audioOnly, userAgent, videoCodec,
                     audioExtension, audioMimeType, isMusic,
+                    contentLength = contentLength,
                     sabrStreamingUrl = sabrStreamingUrl,
                     sabrAudioItag = sabrAudioItag,
                     sabrAudioLmt = sabrAudioLmt,
@@ -297,6 +302,7 @@ class FlowDownloadService : Service() {
         audioExtension: String? = null,
         audioMimeType: String? = null,
         isMusic: Boolean = false,
+        contentLength: Long = -1L,
         sabrStreamingUrl: String? = null,
         sabrAudioItag: Int = 0,
         sabrAudioLmt: Long = 0,
@@ -377,7 +383,8 @@ class FlowDownloadService : Service() {
                     savePath = savePath,
                     fileName = fileName,
                     threads = threadCount,
-                    userAgent = userAgent
+                    userAgent = userAgent,
+                    totalBytes = if (contentLength > 0) contentLength else 0L
                 )
             } else {
                 FlowDownloadMission(
@@ -387,7 +394,8 @@ class FlowDownloadService : Service() {
                     quality = quality,
                     savePath = savePath,
                     fileName = fileName,
-                    threads = threadCount
+                    threads = threadCount,
+                    totalBytes = if (contentLength > 0) contentLength else 0L
                 )
             }
 

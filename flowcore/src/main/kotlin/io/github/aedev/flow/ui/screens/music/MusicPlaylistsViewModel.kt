@@ -161,11 +161,20 @@ class MusicPlaylistsViewModel @Inject constructor(
                 val totalTracks = videos.size
 
                 try {
+                    val trackInfos = videos.map { video ->
+                        io.github.aedev.flow.data.download.FlowPlaylistTrackInfo(
+                            videoId = video.id,
+                            title = video.title,
+                            artist = video.channelName,
+                            durationSec = video.duration.toLong(),
+                            thumbnailUrl = video.thumbnailUrl
+                        )
+                    }
                     io.github.aedev.flow.data.download.FlowDownloadCallbacks.onPlaylistDownloadRegistered?.invoke(
                         playlist.id,
                         playlist.name,
                         playlist.thumbnailUrl,
-                        videos.map { it.id }
+                        trackInfos
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -231,11 +240,20 @@ class MusicPlaylistsViewModel @Inject constructor(
                 val totalTracks = tracks.size
 
                 try {
+                    val trackInfos = tracks.map { track ->
+                        io.github.aedev.flow.data.download.FlowPlaylistTrackInfo(
+                            videoId = track.videoId,
+                            title = track.title,
+                            artist = track.artist,
+                            durationSec = track.duration.toLong(),
+                            thumbnailUrl = track.thumbnailUrl
+                        )
+                    }
                     io.github.aedev.flow.data.download.FlowDownloadCallbacks.onPlaylistDownloadRegistered?.invoke(
                         playlistDetails.id,
                         playlistDetails.title,
                         playlistDetails.thumbnailUrl,
-                        tracks.map { it.videoId }
+                        trackInfos
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()

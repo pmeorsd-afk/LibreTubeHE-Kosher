@@ -1,5 +1,13 @@
 package io.github.aedev.flow.data.download
 
+data class FlowPlaylistTrackInfo(
+    val videoId: String,
+    val title: String,
+    val artist: String,
+    val durationSec: Long,
+    val thumbnailUrl: String? = null
+)
+
 object FlowDownloadCallbacks {
     var onDownloadCompleted: ((
         videoId: String,
@@ -16,6 +24,6 @@ object FlowDownloadCallbacks {
         playlistId: String,
         title: String,
         thumbnailUrl: String?,
-        trackIds: List<String>
+        tracks: List<FlowPlaylistTrackInfo>
     ) -> Unit)? = null
 }

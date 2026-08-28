@@ -9,6 +9,7 @@ import com.github.libretube.db.obj.DownloadPlaylist
 import com.github.libretube.db.obj.DownloadPlaylistVideosCrossRef
 import com.github.libretube.enums.FileType
 import io.github.aedev.flow.data.download.FlowDownloadCallbacks
+import io.github.aedev.flow.data.download.FlowPlaylistTrackInfo
 import io.github.aedev.flow.data.local.AppDatabase
 import io.github.aedev.flow.data.local.entity.DownloadFileType
 import io.github.aedev.flow.data.local.entity.DownloadItemStatus
@@ -41,10 +42,10 @@ object FlowDownloadBridge {
             }
         }
 
-        FlowDownloadCallbacks.onPlaylistDownloadRegistered = { playlistId, title, thumbnailUrl, trackIds ->
+        FlowDownloadCallbacks.onPlaylistDownloadRegistered = { playlistId, title, thumbnailUrl, tracks ->
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    registerPlaylist(playlistId, title, thumbnailUrl, trackIds)
+                    registerPlaylist(playlistId, title, thumbnailUrl, tracks)
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to register playlist from callback: $playlistId", e)
                 }
@@ -110,7 +111,7 @@ object FlowDownloadBridge {
         playlistId: String,
         title: String,
         thumbnailUrl: String?,
-        trackIds: List<String>
+        tracks: List<FlowPlaylistTrackInfo>
     ) {
         if (playlistId.isBlank() || title.isBlank()) return
 
@@ -122,16 +123,33 @@ object FlowDownloadBridge {
         )
         Database.downloadDao().insertPlaylist(downloadPlaylist)
 
-        for (videoId in trackIds) {
-            if (videoId.isNotBlank()) {
+        for (track in tracks) {
+            if (track.videoId.isNotBlank()) {
+                if (!Database.downloadDao().exists(track.videoId)) {
+                    val download = Download(
+                        videoId = track.videoId,
+                        title = track.title.ifBlank { "Track" },
+                        description = "",
+                        uploader = track.artist,
+                        duration = track.durationSec.takeIf { it > 0 },
+                        uploadDate = null,
+                        thumbnailPath = null,
+                        uploaderUrl = null,
+                        views = 0,
+                        likes = 0,
+                        dislikes = -1
+                    )
+                    Database.downloadDao().insertDownload(download)
+                }
+
                 val crossRef = DownloadPlaylistVideosCrossRef(
                     playlistId = playlistId,
-                    videoId = videoId
+                    videoId = track.videoId
                 )
                 Database.downloadDao().insertPlaylistVideoConnection(crossRef)
             }
         }
-        Log.d(TAG, "Registered playlist in LibreTube DB: $playlistId ($title) with ${trackIds.size} tracks")
+        Log.d(TAG, "Registered playlist in LibreTube DB: $playlistId ($title) with ${tracks.size} tracks")
     }
 
     suspend fun syncFlowDownloadsToLibreTube(context: Context) {

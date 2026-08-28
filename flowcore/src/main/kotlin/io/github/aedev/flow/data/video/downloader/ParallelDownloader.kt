@@ -407,8 +407,6 @@ class ParallelDownloader @Inject constructor() {
             Request.Builder()
                 .url(rangedUrl)
                 .header("User-Agent", mission.userAgent)
-                .header("Origin", "https://www.youtube.com")
-                .header("Referer", "https://www.youtube.com/")
                 .header("Accept", "*/*")
                 .header("Accept-Encoding", "identity")
                 .build()
@@ -422,11 +420,31 @@ class ParallelDownloader @Inject constructor() {
 
         val call = client.newCall(request)
         mission.activeCalls.add(call)
-        val response = try {
+        var response = try {
             call.execute()
         } catch (e: Exception) {
             mission.activeCalls.remove(call)
             throw e
+        }
+
+        if (!response.isSuccessful && isYT) {
+            response.close()
+            mission.activeCalls.remove(call)
+            // Fallback: try standard HTTP Range header
+            val fallbackRequest = Request.Builder()
+                .url(url)
+                .header("Range", "bytes=$resumeFrom-$endByte")
+                .header("User-Agent", mission.userAgent)
+                .header("Accept", "*/*")
+                .build()
+            val fallbackCall = client.newCall(fallbackRequest)
+            mission.activeCalls.add(fallbackCall)
+            response = try {
+                fallbackCall.execute()
+            } catch (e: Exception) {
+                mission.activeCalls.remove(fallbackCall)
+                throw e
+            }
         }
         var bytesWrittenInSession = 0L
         try {
@@ -477,44 +495,54 @@ class ParallelDownloader @Inject constructor() {
     }
 
     private fun getContentLength(client: OkHttpClient, url: String, userAgent: String): Long {
-        val useQueryRange = isYouTubeStreamUrl(url)
-        return try {
-            if (!useQueryRange) {
-                val request = Request.Builder()
-                    .url(url)
-                    .head()
-                    .header("User-Agent", userAgent)
-                    .build()
-                val response = client.newCall(request).execute()
-                val length = response.header("Content-Length")?.toLongOrNull() ?: -1L
-                response.close()
-                if (length > 0) return length
-            }
-            // Fallback: Range bytes=0-0 → read Content-Range header
-            val rangeRequest = if (useQueryRange) {
-                // YouTube: use query-range
-                Request.Builder()
-                    .url(buildYouTubeBlockUrl(url, 0L, 0L))
-                    .header("User-Agent", userAgent)
-                    .header("Origin", "https://www.youtube.com")
-                    .header("Referer", "https://www.youtube.com/")
-                    .build()
-            } else {
-                Request.Builder()
-                    .url(url)
-                    .header("Range", "bytes=0-0")
-                    .header("User-Agent", userAgent)
-                    .build()
-            }
-            val rangeResponse = client.newCall(rangeRequest).execute()
-            val total = rangeResponse.header("Content-Range")
-                ?.substringAfter("/")?.toLongOrNull() ?: -1L
-            val bodyLen = rangeResponse.header("Content-Length")?.toLongOrNull() ?: -1L
-            rangeResponse.close()
-            if (total > 0) total else if (bodyLen > 1) bodyLen else -1L
-        } catch (e: Exception) {
-            Log.e(TAG, "Content length check failed: url=$url, error=${e.message}")
-            -1L
-        }
+        // 1. Check clen query parameter
+        val clen = extractClenFromUrl(url)
+        if (clen > 0) return clen
+
+        // 2. Try standard HEAD request
+        try {
+            val headRequest = Request.Builder()
+                .url(url)
+                .head()
+                .header("User-Agent", userAgent)
+                .build()
+            val response = client.newCall(headRequest).execute()
+            val len = response.header("Content-Length")?.toLongOrNull() ?: -1L
+            response.close()
+            if (len > 0) return len
+        } catch (_: Exception) {}
+
+        // 3. Try standard Range: bytes=0-0 GET request
+        try {
+            val rangeRequest = Request.Builder()
+                .url(url)
+                .header("Range", "bytes=0-0")
+                .header("User-Agent", userAgent)
+                .build()
+            val response = client.newCall(rangeRequest).execute()
+            val total = response.header("Content-Range")
+                ?.substringAfter("/")?.trim()?.toLongOrNull() ?: -1L
+            val bodyLen = response.header("Content-Length")?.toLongOrNull() ?: -1L
+            response.close()
+            if (total > 0) return total
+            if (bodyLen > 1) return bodyLen
+        } catch (_: Exception) {}
+
+        // 4. Try YouTube query-range (range=0-0)
+        try {
+            val rangedUrl = buildYouTubeBlockUrl(url, 0L, 0L)
+            val ytRequest = Request.Builder()
+                .url(rangedUrl)
+                .header("User-Agent", userAgent)
+                .build()
+            val response = client.newCall(ytRequest).execute()
+            val total = response.header("Content-Range")
+                ?.substringAfter("/")?.trim()?.toLongOrNull() ?: -1L
+            response.close()
+            if (total > 0) return total
+        } catch (_: Exception) {}
+
+        Log.e(TAG, "getContentLength: could not determine content length for $url")
+        return -1L
     }
 }
