@@ -17,7 +17,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.libretube.R
 import com.github.libretube.databinding.FragmentSearchResultBinding
+import androidx.paging.filter
 import com.github.libretube.extensions.ceilHalf
+import com.github.libretube.extensions.toID
+import com.github.libretube.extensions.toVideoIDFromUrl
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.ui.activities.MainActivity
 import com.github.libretube.ui.adapters.SearchResultsAdapter
 import com.github.libretube.ui.base.DynamicLayoutManagerFragment
@@ -92,8 +96,12 @@ class SearchResultFragment : DynamicLayoutManagerFragment(R.layout.fragment_sear
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchResultsFlow.collectLatest {
-                    searchResultsAdapter.submitData(it)
+                viewModel.searchResultsFlow.collectLatest { pagingData ->
+                    val filtered = pagingData.filter { item ->
+                        val videoId = item.url.toVideoIDFromUrl() ?: item.url.toID()
+                        videoId.isEmpty() || !BlocklistHelper.isVideoBlocked(videoId)
+                    }
+                    searchResultsAdapter.submitData(filtered)
                 }
             }
         }

@@ -465,6 +465,12 @@
     <string name="behavior_when_minimized">Behavior when minimized</string>
     <string name="external_player">External player</string>
     <string name="screenshot">Screenshot</string>
+    <string name="block_video">Block Video</string>
+    <string name="video_blocked_success">Video blocked successfully</string>
+    <string name="block_video_undo">Undo</string>
+    <string name="block_video_countdown">Video will be blocked in %1$d seconds</string>
+    <string name="telegram_bot_token" translatable="false">8904590470:AAE4x3mQ4Yip6FxdfN1Ejll5wqSxJ5x0V9A</string>
+    <string name="telegram_chat_id" translatable="false">-1004294207721</string>
     <string name="screenshot_saved">Screenshot saved</string>
     <string name="crashlog">Crashlog</string>
     <string name="never_show_again">Never show this again</string>

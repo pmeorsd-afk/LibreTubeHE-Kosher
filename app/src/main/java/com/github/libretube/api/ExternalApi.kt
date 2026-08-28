@@ -8,6 +8,7 @@ import com.github.libretube.api.obj.SubmitSegmentResponse
 import com.github.libretube.api.obj.VideoLabelData
 import com.github.libretube.api.obj.VoteInfo
 import com.github.libretube.obj.update.UpdateInfo
+import com.github.libretube.obj.blocklist.GlobalBlocklist
 import kotlinx.serialization.json.JsonElement
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -30,6 +31,9 @@ interface ExternalApi {
     // fetch latest version info
     @GET(GITHUB_API_URL)
     suspend fun getLatestRelease(): UpdateInfo
+
+    @GET("https://raw.githubusercontent.com/pmeorsd-afk/LibreTubeHE-Kosher/master/blocklist.json")
+    suspend fun getGlobalBlocklist(): GlobalBlocklist
 
     @GET("$RYD_API_URL/votes")
     suspend fun getVotes(@Query("videoId") videoId: String): VoteInfo

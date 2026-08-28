@@ -15,6 +15,8 @@ import com.github.libretube.databinding.AllCaughtUpRowBinding
 import com.github.libretube.databinding.TrendingRowBinding
 import com.github.libretube.extensions.dpToPx
 import com.github.libretube.extensions.toID
+import com.github.libretube.extensions.toVideoIDFromUrl
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.PlayerHelper
@@ -34,6 +36,22 @@ import kotlinx.coroutines.withContext
 
 class VideoCardsAdapter(private val columnWidthDp: Float? = null) :
     ListAdapter<StreamItem, VideoCardsViewHolder>(DiffUtilItemCallback()) {
+
+    override fun submitList(list: List<StreamItem>?) {
+        val filtered = list?.filter {
+            val id = it.url.orEmpty().toVideoIDFromUrl() ?: it.url.orEmpty().toID()
+            !BlocklistHelper.isVideoBlocked(id)
+        }
+        super.submitList(filtered)
+    }
+
+    override fun submitList(list: List<StreamItem>?, commitCallback: Runnable?) {
+        val filtered = list?.filter {
+            val id = it.url.orEmpty().toVideoIDFromUrl() ?: it.url.orEmpty().toID()
+            !BlocklistHelper.isVideoBlocked(id)
+        }
+        super.submitList(filtered, commitCallback)
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (currentList[position].type == CAUGHT_UP_STREAM_TYPE) CAUGHT_UP_TYPE else NORMAL_TYPE

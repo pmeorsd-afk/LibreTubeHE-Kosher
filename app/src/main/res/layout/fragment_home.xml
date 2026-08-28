@@ -493,7 +493,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="v2.4.1 · פרטיות מלאה"
+                        android:text="v31.4 · פרטיות מלאה"
                         android:textColor="#80FFFFFF"
                         android:textSize="10sp" />
 

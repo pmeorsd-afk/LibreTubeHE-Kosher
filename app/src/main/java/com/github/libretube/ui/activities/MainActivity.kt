@@ -46,6 +46,7 @@ import com.github.libretube.extensions.anyChildFocused
 import com.github.libretube.helpers.ImportHelper
 import com.github.libretube.helpers.IntentHelper
 import com.github.libretube.helpers.NavBarHelper
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.NetworkHelper
@@ -111,6 +112,7 @@ class MainActivity : AbstractPlayerHostActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        BlocklistHelper.init(this)
 
         // show noInternet Activity if no internet available on app startup
         if (!NetworkHelper.isNetworkAvailable(this)) {

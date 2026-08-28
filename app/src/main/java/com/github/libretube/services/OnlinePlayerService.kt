@@ -24,6 +24,7 @@ import com.github.libretube.extensions.setMetadata
 import com.github.libretube.extensions.toastFromMainDispatcher
 import com.github.libretube.extensions.toastFromMainThread
 import com.github.libretube.extensions.updateParameters
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.FlowHistoryBridge
 import com.github.libretube.helpers.KosherMode
@@ -108,6 +109,11 @@ open class OnlinePlayerService : AbstractPlayerService() {
         playlistId = playerData.playlistId
         channelId = playerData.channelId
         startTimestampSeconds = playerData.timestamp
+
+        if (BlocklistHelper.isVideoBlocked(videoId)) {
+            stopSelf()
+            return
+        }
 
         if (!playerData.keepQueue) PlayingQueue.clear()
 

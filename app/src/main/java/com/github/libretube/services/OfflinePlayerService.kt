@@ -24,6 +24,7 @@ import com.github.libretube.extensions.parcelable
 import com.github.libretube.extensions.setMetadata
 import com.github.libretube.extensions.toAndroidUri
 import com.github.libretube.extensions.updateParameters
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.FlowHistoryBridge
 import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PlayerHelper
@@ -95,6 +96,11 @@ open class OfflinePlayerService : AbstractPlayerService() {
         } else {
             playerData.videoId
         } ?: return
+
+        if (BlocklistHelper.isVideoBlocked(videoId)) {
+            stopSelf()
+            return
+        }
 
         exoPlayer?.addListener(playerListener)
         trackSelector?.updateParameters {

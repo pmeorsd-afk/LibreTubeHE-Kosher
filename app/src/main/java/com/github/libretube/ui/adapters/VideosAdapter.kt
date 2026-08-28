@@ -12,6 +12,8 @@ import com.github.libretube.constants.IntentData
 import com.github.libretube.databinding.VideoRowBinding
 import com.github.libretube.db.DatabaseHolder
 import com.github.libretube.extensions.toID
+import com.github.libretube.extensions.toVideoIDFromUrl
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.parcelable.PlayerData
@@ -31,6 +33,22 @@ import kotlinx.coroutines.withContext
 class VideosAdapter(
     private val showChannelInfo: Boolean = true
 ) : ListAdapter<StreamItem, VideosViewHolder>(DiffUtilItemCallback()) {
+
+    override fun submitList(list: List<StreamItem>?) {
+        val filtered = list?.filter {
+            val id = it.url.orEmpty().toVideoIDFromUrl() ?: it.url.orEmpty().toID()
+            !BlocklistHelper.isVideoBlocked(id)
+        }
+        super.submitList(filtered)
+    }
+
+    override fun submitList(list: List<StreamItem>?, commitCallback: Runnable?) {
+        val filtered = list?.filter {
+            val id = it.url.orEmpty().toVideoIDFromUrl() ?: it.url.orEmpty().toID()
+            !BlocklistHelper.isVideoBlocked(id)
+        }
+        super.submitList(filtered, commitCallback)
+    }
 
     fun insertItems(newItems: List<StreamItem>) {
         val updatedList = currentList.toMutableList().also {

@@ -136,3 +136,6 @@
 -dontwarn java.beans.IntrospectionException
 -dontwarn java.beans.Introspector
 -dontwarn java.beans.PropertyDescriptor
+
+# Fix for SLF4J missing classes warning in R8
+-dontwarn org.slf4j.impl.StaticLoggerBinder

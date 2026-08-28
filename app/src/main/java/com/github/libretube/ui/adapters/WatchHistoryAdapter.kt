@@ -10,6 +10,7 @@ import com.github.libretube.constants.IntentData
 import com.github.libretube.databinding.VideoRowBinding
 import com.github.libretube.db.DatabaseHolder
 import com.github.libretube.db.obj.WatchHistoryItem
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.parcelable.PlayerData
@@ -27,6 +28,16 @@ import kotlinx.coroutines.withContext
 
 class WatchHistoryAdapter :
     ListAdapter<WatchHistoryItem, WatchHistoryViewHolder>(DiffUtilItemCallback()) {
+
+    override fun submitList(list: List<WatchHistoryItem>?) {
+        val filtered = list?.filter { !BlocklistHelper.isVideoBlocked(it.videoId) }
+        super.submitList(filtered)
+    }
+
+    override fun submitList(list: List<WatchHistoryItem>?, commitCallback: Runnable?) {
+        val filtered = list?.filter { !BlocklistHelper.isVideoBlocked(it.videoId) }
+        super.submitList(filtered, commitCallback)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WatchHistoryViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

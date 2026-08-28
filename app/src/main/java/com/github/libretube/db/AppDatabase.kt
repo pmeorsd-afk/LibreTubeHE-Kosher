@@ -4,6 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.github.libretube.db.dao.BlockedVideoDao
 import com.github.libretube.db.dao.CustomInstanceDao
 import com.github.libretube.db.dao.DownloadDao
 import com.github.libretube.db.dao.LocalPlaylistsDao
@@ -14,6 +15,7 @@ import com.github.libretube.db.dao.SubscriptionGroupsDao
 import com.github.libretube.db.dao.SubscriptionsFeedDao
 import com.github.libretube.db.dao.WatchHistoryDao
 import com.github.libretube.db.dao.WatchPositionDao
+import com.github.libretube.db.obj.BlockedVideo
 import com.github.libretube.db.obj.CustomInstance
 import com.github.libretube.db.obj.Download
 import com.github.libretube.db.obj.DownloadChapter
@@ -48,9 +50,10 @@ import com.github.libretube.db.obj.WatchPosition
         DownloadPlaylist::class,
         DownloadPlaylistVideosCrossRef::class,
         SubscriptionGroup::class,
-        SubscriptionsFeedItem::class
+        SubscriptionsFeedItem::class,
+        BlockedVideo::class
     ],
-    version = 23,
+    version = 24,
     autoMigrations = [
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
@@ -59,7 +62,8 @@ import com.github.libretube.db.obj.WatchPosition
         AutoMigration(from = 16, to = 17),
         AutoMigration(from = 18, to = 19),
         AutoMigration(from = 19, to = 20),
-        AutoMigration(from = 20, to = 21)
+        AutoMigration(from = 20, to = 21),
+        AutoMigration(from = 23, to = 24)
     ]
 )
 @TypeConverters(Converters::class)
@@ -113,4 +117,9 @@ abstract class AppDatabase : RoomDatabase() {
      * Locally cached subscription feed
      */
     abstract fun feedDao(): SubscriptionsFeedDao
+
+    /**
+     * Blocked videos
+     */
+    abstract fun blockedVideoDao(): BlockedVideoDao
 }

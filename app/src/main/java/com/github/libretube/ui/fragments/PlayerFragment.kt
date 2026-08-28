@@ -70,7 +70,9 @@ import com.github.libretube.extensions.serializableExtra
 import com.github.libretube.extensions.toID
 import com.github.libretube.extensions.togglePlayPauseState
 import com.github.libretube.extensions.updateIfChanged
+import android.widget.Toast
 import com.github.libretube.helpers.BackgroundHelper
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.helpers.DownloadHelper
 import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.KosherMode
@@ -110,6 +112,8 @@ import com.github.libretube.util.TextUtils
 import com.github.libretube.util.TextUtils.toTimeInSeconds
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -148,6 +152,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
 
     // True when the video was closed through the close button on PiP mode
     private var closedVideo = false
+
+    private var blockJob: Job? = null
 
     private var autoPlayCountdownEnabled = PlayerHelper.autoPlayCountdown
 
@@ -426,6 +432,15 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
         isOffline = playerData.isOffline
         playlistId = playerData.playlistId
         channelId = playerData.channelId
+
+        if (BlocklistHelper.isVideoBlocked(videoId)) {
+            Toast.makeText(requireContext(), R.string.video_blocked_success, Toast.LENGTH_SHORT).show()
+            commonPlayerViewModel.isMiniPlayerVisible.value = false
+            baseActivity.supportFragmentManager.commit {
+                remove(this@PlayerFragment)
+            }
+            return
+        }
 
         // remember if playback already started once and only restart playback if that's the first run
         val createNewSession = !requireArguments().getBoolean(IntentData.alreadyStarted)
@@ -755,24 +770,56 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
             DownloadHelper.startDownloadDialog(requireContext(), childFragmentManager, videoId)
         }
 
-        binding.relPlayerScreenshot.setOnClickListener {
-            if (KosherMode.ENABLED) return@setOnClickListener
+        binding.relPlayerBlock?.setOnClickListener {
             if (!this::streams.isInitialized) return@setOnClickListener
-            val surfaceView =
-                binding.player.videoSurfaceView as? SurfaceView ?: return@setOnClickListener
+            val videoToBlock = videoId
+            val titleToBlock = streams.title ?: "סרטון ללא שם"
 
-            val bmp = Bitmap.createBitmap(
-                surfaceView.width,
-                surfaceView.height,
-                Bitmap.Config.ARGB_8888
-            )
+            // Cancel any existing block job
+            blockJob?.cancel()
 
-            PixelCopy.request(surfaceView, bmp, { _ ->
-                screenshotBitmap = bmp
-                val currentPosition =
-                    playerController.currentPosition.toFloat() / 1000
-                openScreenshotFile.launch("${streams.title}-${currentPosition}.png")
-            }, handler)
+            // Pause playback if controller is initialized
+            if (::playerController.isInitialized) {
+                playerController.pause()
+            }
+
+            var countdownSeconds = 10
+            var snackbar: Snackbar? = null
+
+            fun showBlockSnackbar() {
+                val msg = getString(R.string.block_video_countdown, countdownSeconds)
+                snackbar = Snackbar.make(binding.root, msg, Snackbar.LENGTH_INDEFINITE).apply {
+                    setAction(R.string.block_video_undo) {
+                        blockJob?.cancel()
+                        if (::playerController.isInitialized) {
+                            playerController.play()
+                        }
+                    }
+                    show()
+                }
+            }
+
+            showBlockSnackbar()
+
+            blockJob = viewLifecycleOwner.lifecycleScope.launch {
+                while (countdownSeconds > 0) {
+                    delay(1000L)
+                    countdownSeconds--
+                    if (countdownSeconds > 0) {
+                        snackbar?.setText(getString(R.string.block_video_countdown, countdownSeconds))
+                    }
+                }
+                snackbar?.dismiss()
+
+                // Block the video locally and report to Telegram
+                BlocklistHelper.blockVideoLocally(requireContext(), videoToBlock, titleToBlock)
+
+                // Close player
+                killPlayerFragment()
+
+                // Show success toast
+                Toast.makeText(requireContext(), R.string.video_blocked_success, Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.playerChannel.setOnClickListener {

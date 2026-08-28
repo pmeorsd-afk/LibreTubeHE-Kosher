@@ -17,6 +17,8 @@ import androidx.media3.session.SessionToken
 import com.github.libretube.constants.IntentData
 import com.github.libretube.extensions.TAG
 import com.github.libretube.parcelable.PlayerData
+import com.github.libretube.R
+import com.github.libretube.helpers.BlocklistHelper
 import com.github.libretube.services.AbstractPlayerService
 import com.github.libretube.services.OfflinePlayerService
 import com.github.libretube.services.OnlinePlayerService
@@ -42,6 +44,12 @@ object BackgroundHelper {
         context: Context,
         playerData: PlayerData,
     ) {
+        val videoId = playerData.videoId
+        if (videoId != null && BlocklistHelper.isVideoBlocked(videoId)) {
+            android.widget.Toast.makeText(context, R.string.video_blocked_success, android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
+
         // close the previous video player if open
         val fragmentManager =
             ContextHelper.unwrapActivity<AbstractPlayerHostActivity>(context).supportFragmentManager

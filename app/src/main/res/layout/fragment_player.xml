@@ -74,10 +74,10 @@
                         app:icon="@drawable/ic_open" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/relPlayer_screenshot"
+                        android:id="@+id/relPlayer_block"
                         style="@style/PlayerActionsButton"
-                        android:text="@string/screenshot"
-                        app:icon="@drawable/ic_copy" />
+                        android:text="@string/block_video"
+                        app:icon="@drawable/ic_block" />
                 </LinearLayout>
 
             </HorizontalScrollView>
