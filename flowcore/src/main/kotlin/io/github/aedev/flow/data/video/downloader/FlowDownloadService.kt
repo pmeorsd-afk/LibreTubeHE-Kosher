@@ -622,7 +622,7 @@ class FlowDownloadService : Service() {
                             mission.video.duration,
                             mission.savePath,
                             fileSize,
-                            effectiveAudioOnly,
+                            audioOnly,
                             mission.video.thumbnailUrl
                         )
                     } catch (e: Exception) {
@@ -857,7 +857,7 @@ class FlowDownloadService : Service() {
                             mission.video.duration,
                             mission.savePath,
                             fileSize,
-                            effectiveAudioOnly,
+                            audioOnly,
                             mission.video.thumbnailUrl
                         )
                     } catch (e: Exception) {
