@@ -159,6 +159,17 @@ class MusicPlaylistsViewModel @Inject constructor(
             try {
                 val videos = playlistRepository.getPlaylistVideosFlow(playlist.id).first()
                 val totalTracks = videos.size
+
+                try {
+                    io.github.aedev.flow.data.download.FlowDownloadCallbacks.onPlaylistDownloadRegistered?.invoke(
+                        playlist.id,
+                        playlist.name,
+                        playlist.thumbnailUrl,
+                        videos.map { it.id }
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 
                 if (totalTracks == 0) {
                      Toast.makeText(context, "Playlist is empty", Toast.LENGTH_SHORT).show()
@@ -218,6 +229,17 @@ class MusicPlaylistsViewModel @Inject constructor(
             try {
                 val tracks = playlistDetails.tracks
                 val totalTracks = tracks.size
+
+                try {
+                    io.github.aedev.flow.data.download.FlowDownloadCallbacks.onPlaylistDownloadRegistered?.invoke(
+                        playlistDetails.id,
+                        playlistDetails.title,
+                        playlistDetails.thumbnailUrl,
+                        tracks.map { it.videoId }
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
                 if (totalTracks == 0) {
                      _isDownloadingPlaylist.value = false

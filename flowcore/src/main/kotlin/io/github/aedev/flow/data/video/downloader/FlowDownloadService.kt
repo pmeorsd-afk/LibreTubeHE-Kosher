@@ -613,6 +613,21 @@ class FlowDownloadService : Service() {
                     if (!ids.isNullOrEmpty()) {
                         downloadManager.updateItemFull(ids.first(), fileSize, fileSize, DownloadItemStatus.COMPLETED)
                     }
+
+                    try {
+                        io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadCompleted?.invoke(
+                            videoId,
+                            mission.video.title,
+                            mission.video.channelName,
+                            mission.video.duration,
+                            mission.savePath,
+                            fileSize,
+                            effectiveAudioOnly,
+                            mission.video.thumbnailUrl
+                        )
+                    } catch (e: Exception) {
+                        Log.w(TAG, "FlowDownloadCallbacks.onDownloadCompleted failed for $videoId", e)
+                    }
                     
                     try {
                         val mimeType = when {
@@ -832,6 +847,21 @@ class FlowDownloadService : Service() {
                     val ids = itemIds[videoId]
                     if (!ids.isNullOrEmpty()) {
                         downloadManager.updateItemFull(ids.first(), fileSize, fileSize, DownloadItemStatus.COMPLETED)
+                    }
+
+                    try {
+                        io.github.aedev.flow.data.download.FlowDownloadCallbacks.onDownloadCompleted?.invoke(
+                            videoId,
+                            mission.video.title,
+                            mission.video.channelName,
+                            mission.video.duration,
+                            mission.savePath,
+                            fileSize,
+                            effectiveAudioOnly,
+                            mission.video.thumbnailUrl
+                        )
+                    } catch (e: Exception) {
+                        Log.w(TAG, "FlowDownloadCallbacks.onDownloadCompleted failed for $videoId", e)
                     }
 
                     try {

@@ -204,6 +204,10 @@ class DownloadsFragmentPage : DynamicLayoutManagerFragment(R.layout.fragment_dow
         binding.sortType.text = filterOptions[selectedSortType]
 
         lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
+                runCatching { FlowDownloadBridge.syncFlowDownloadsToLibreTube(requireContext()) }
+            }
+
             val playlistItems = downloadPlaylistId?.let { playlistId ->
                 val playlist = withContext(Dispatchers.IO) {
                     Database.downloadDao().getDownloadPlaylistById(playlistId)
@@ -546,6 +550,10 @@ class PlaylistDownloadsFragmentPage : Fragment(R.layout.fragment_download_conten
         binding.sortType.text = filterOptions[selectedSortType]
 
         lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
+                runCatching { FlowDownloadBridge.syncFlowDownloadsToLibreTube(requireContext()) }
+            }
+
             val downloadPlaylists = withContext(Dispatchers.IO) {
                 Database.downloadDao().getDownloadPlaylists()
             }

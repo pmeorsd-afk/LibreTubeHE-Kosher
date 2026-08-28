@@ -33,6 +33,7 @@ object FlowBridgeInitializer {
         runCatching {
             EnhancedMusicPlayerManager.initialize(appContext)
             DeepFlowManager.initialize(appContext)
+            FlowDownloadBridge.init(appContext)
         }.onFailure {
             Log.w(TAG, "Flow runtime init failed: ${it.message}")
         }
