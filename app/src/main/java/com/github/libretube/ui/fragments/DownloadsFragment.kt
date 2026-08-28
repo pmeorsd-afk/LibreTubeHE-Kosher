@@ -41,6 +41,7 @@ import com.github.libretube.extensions.formatAsFileSize
 import com.github.libretube.extensions.serializable
 import com.github.libretube.extensions.setOnDismissListener
 import com.github.libretube.helpers.DownloadHelper
+import com.github.libretube.helpers.FlowDownloadBridge
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.PreferenceHelper
 import com.github.libretube.obj.DownloadStatus

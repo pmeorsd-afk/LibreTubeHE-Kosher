@@ -1,11 +1,11 @@
-﻿package io.github.aedev.flow.data.download
+package io.github.aedev.flow.data.download
 
 object FlowDownloadCallbacks {
     var onDownloadCompleted: ((
         videoId: String,
         title: String,
         channelName: String,
-        durationSec: Int,
+        durationSec: Long,
         filePath: String,
         fileSize: Long,
         isAudio: Boolean,
