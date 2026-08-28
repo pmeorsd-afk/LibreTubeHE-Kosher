@@ -33,6 +33,26 @@ object FlowHistoryBridge {
             .map(VideoHistoryEntry::toWatchHistoryItem)
     }
 
+    suspend fun getMusicHistoryPage(page: Int, pageSize: Int): List<WatchHistoryItem> {
+        val offset = (page - 1).coerceAtLeast(0) * pageSize
+        return ViewHistory.getInstance(LibreTubeApp.instance)
+            .getMusicHistoryFlow()
+            .first()
+            .drop(offset)
+            .take(pageSize)
+            .map(VideoHistoryEntry::toWatchHistoryItem)
+    }
+
+    suspend fun getAllHistoryPage(page: Int, pageSize: Int): List<WatchHistoryItem> {
+        val offset = (page - 1).coerceAtLeast(0) * pageSize
+        return ViewHistory.getInstance(LibreTubeApp.instance)
+            .getAllHistory()
+            .first()
+            .drop(offset)
+            .take(pageSize)
+            .map(VideoHistoryEntry::toWatchHistoryItem)
+    }
+
     suspend fun removeWatch(videoId: String) {
         if (videoId.isBlank()) return
         ViewHistory.getInstance(LibreTubeApp.instance).clearVideoHistory(videoId)

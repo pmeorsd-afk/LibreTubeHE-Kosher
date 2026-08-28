@@ -67,6 +67,7 @@ fun MusicSearchScreen(
 ) {
     val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val searchHistory by viewModel.searchHistory.collectAsState()
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -191,8 +192,51 @@ fun MusicSearchScreen(
                 .padding(padding)
         ) {
             if (!uiState.isSearching) {
-                // Show suggestions
+                // Show search history if query is blank, otherwise show suggestions
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    if (query.isBlank() && searchHistory.isNotEmpty()) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.recent_searches),
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                TextButton(onClick = { viewModel.clearSearchHistory() }) {
+                                    Text(
+                                        text = stringResource(R.string.clear_all),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                        items(searchHistory.take(8), key = { it.id }) { item ->
+                            MusicSearchHistoryRow(
+                                item = item,
+                                onClick = {
+                                    dismissSearchInput()
+                                    viewModel.performSearch(item.query)
+                                },
+                                onDelete = {
+                                    viewModel.deleteSearchHistoryItem(item)
+                                }
+                            )
+                        }
+                        item {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                            )
+                        }
+                    }
+
                     items(uiState.recommendedItems) { item ->
                         RecommendedItemRow(
                             item = item,
@@ -880,3 +924,45 @@ private fun YTItem.toCollectionActionItem(): MusicCollectionActionItem? = when (
     )
     else -> null
 }
+
+@Composable
+private fun MusicSearchHistoryRow(
+    item: io.github.aedev.flow.data.local.SearchHistoryItem,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = if (item.type == io.github.aedev.flow.data.local.SearchType.VOICE) Icons.Filled.Mic
+                else Icons.Filled.History,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp)
+        )
+        Text(
+            text = item.query,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Remove",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+

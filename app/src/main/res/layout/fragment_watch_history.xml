@@ -49,29 +49,58 @@
                 app:layout_scrollFlags="scroll"
                 app:titleCollapseMode="scale">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/status_filter_chips"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:clipToPadding="false"
                     android:paddingHorizontal="10dp"
-                    app:selectionRequired="true"
-                    tools:checkedChip="@id/chip_continue">
+                    android:paddingVertical="4dp">
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_continue"
-                        style="@style/KosherGlassChip"
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/status_filter_chips"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/continue_watching" />
+                        app:singleLine="true">
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_finished"
-                        style="@style/KosherGlassChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/finished" />
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_all"
+                            style="@style/KosherGlassChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/history_filter_all" />
 
-                </com.google.android.material.chip.ChipGroup>
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_music"
+                            style="@style/KosherGlassChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/history_filter_music" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_videos"
+                            style="@style/KosherGlassChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/history_filter_videos" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_continue"
+                            style="@style/KosherGlassChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/continue_watching" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_finished"
+                            style="@style/KosherGlassChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/finished" />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 

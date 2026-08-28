@@ -63,4 +63,10 @@ object RepositoryModule {
     fun provideShortsRepository(@ApplicationContext context: Context): io.github.aedev.flow.data.shorts.ShortsRepository {
         return io.github.aedev.flow.data.shorts.ShortsRepository.getInstance(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideSearchHistoryRepository(@ApplicationContext context: Context): io.github.aedev.flow.data.local.SearchHistoryRepository {
+        return io.github.aedev.flow.data.local.SearchHistoryRepository(context)
+    }
 }

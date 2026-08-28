@@ -629,4 +629,9 @@
     <string name="subscriptions_shorts">Shorts</string>
     <string name="comment_verified">Verified</string>
     <string name="comment_pinned">Pinned</string>
+    <string name="history_filter_all">All</string>
+    <string name="history_filter_videos">Videos</string>
+    <string name="history_filter_music">YouTube Music</string>
+    <string name="recent_searches">Recent searches</string>
+    <string name="clear_all">Clear all</string>
 </resources>

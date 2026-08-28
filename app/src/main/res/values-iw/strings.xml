@@ -608,4 +608,9 @@
     <string name="subscriptions_today">היום</string>
     <string name="subscriptions_videos">סרטונים</string>
     <string name="subscriptions_shorts">Shorts</string>
+    <string name="history_filter_all">הכל</string>
+    <string name="history_filter_videos">סרטונים</string>
+    <string name="history_filter_music">יוטיוב מיוזיק</string>
+    <string name="recent_searches">חיפושים אחרונים</string>
+    <string name="clear_all">נקה הכל</string>
 </resources>

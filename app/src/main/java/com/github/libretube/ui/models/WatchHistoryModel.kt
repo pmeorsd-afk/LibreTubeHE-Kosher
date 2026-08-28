@@ -29,16 +29,27 @@ class WatchHistoryModel : ViewModel() {
         PreferenceHelper.getInt(PreferenceKeys.SELECTED_HISTORY_STATUS_FILTER, 0)
     )
 
+    private val selectedCategory = MutableStateFlow(FILTER_CATEGORY_ALL)
+
     val filteredWatchHistory =
-        combine(watchHistory.asFlow(), selectedStatus) { history, _ -> history }
+        combine(watchHistory.asFlow(), selectedStatus, selectedCategory) { history, _, _ -> history }
             .flowOn(Dispatchers.IO).map { history -> history.filter { it.shouldIncludeByFilters() } }
             .asLiveData()
 
-    var selectedStatusFilter
+    var selectedStatusFilter: Int
         get() = selectedStatus.value
         set(value) {
             PreferenceHelper.putInt(PreferenceKeys.SELECTED_HISTORY_STATUS_FILTER, value)
             selectedStatus.value = value
+        }
+
+    var selectedCategoryFilter: Int
+        get() = selectedCategory.value
+        set(value) {
+            if (selectedCategory.value != value) {
+                selectedCategory.value = value
+                refresh()
+            }
         }
 
     private suspend fun WatchHistoryItem.shouldIncludeByFilters(): Boolean {
@@ -48,7 +59,7 @@ class WatchHistoryModel : ViewModel() {
         return when (selectedStatusFilter) {
             1 -> DatabaseHelper.filterByWatchStatus(this)
             2 -> DatabaseHelper.filterByWatchStatus(this, false)
-            else -> throw IllegalArgumentException()
+            else -> true
         }
     }
 
@@ -68,10 +79,23 @@ class WatchHistoryModel : ViewModel() {
         isLoading = true
 
         val newHistory = withContext(Dispatchers.IO) {
-            (
-                DatabaseHelper.getWatchHistoryPage(currentPage, HISTORY_PAGE_SIZE) +
-                    FlowHistoryBridge.getWatchHistoryPage(currentPage, HISTORY_PAGE_SIZE)
-                ).distinctBy { it.videoId }
+            when (selectedCategory.value) {
+                FILTER_CATEGORY_MUSIC -> {
+                    FlowHistoryBridge.getMusicHistoryPage(currentPage, HISTORY_PAGE_SIZE)
+                }
+                FILTER_CATEGORY_VIDEOS -> {
+                    (
+                        DatabaseHelper.getWatchHistoryPage(currentPage, HISTORY_PAGE_SIZE) +
+                            FlowHistoryBridge.getWatchHistoryPage(currentPage, HISTORY_PAGE_SIZE)
+                        ).distinctBy { it.videoId }
+                }
+                else -> {
+                    (
+                        DatabaseHelper.getWatchHistoryPage(currentPage, HISTORY_PAGE_SIZE) +
+                            FlowHistoryBridge.getAllHistoryPage(currentPage, HISTORY_PAGE_SIZE)
+                        ).distinctBy { it.videoId }
+                }
+            }
         }
 
         isLoading = false
@@ -95,6 +119,9 @@ class WatchHistoryModel : ViewModel() {
         }
 
     companion object {
-        private const val HISTORY_PAGE_SIZE = 10
+        const val FILTER_CATEGORY_ALL = 0
+        const val FILTER_CATEGORY_VIDEOS = 1
+        const val FILTER_CATEGORY_MUSIC = 2
+        private const val HISTORY_PAGE_SIZE = 15
     }
 }

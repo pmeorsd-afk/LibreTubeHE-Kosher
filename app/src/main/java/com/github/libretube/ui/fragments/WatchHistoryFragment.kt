@@ -88,8 +88,27 @@ class WatchHistoryFragment : DynamicLayoutManagerFragment(R.layout.fragment_watc
             }
         })
 
-        binding.chipContinue.isChecked = viewModel.selectedStatusFilter in arrayOf(0, 1)
-        binding.chipFinished.isChecked = viewModel.selectedStatusFilter in arrayOf(0, 2)
+        // Initial chip state
+        when (viewModel.selectedCategoryFilter) {
+            WatchHistoryModel.FILTER_CATEGORY_MUSIC -> {
+                binding.chipMusic.isChecked = true
+                binding.chipAll.isChecked = false
+                binding.chipVideos.isChecked = false
+            }
+            WatchHistoryModel.FILTER_CATEGORY_VIDEOS -> {
+                binding.chipVideos.isChecked = true
+                binding.chipAll.isChecked = false
+                binding.chipMusic.isChecked = false
+            }
+            else -> {
+                binding.chipAll.isChecked = true
+                binding.chipMusic.isChecked = false
+                binding.chipVideos.isChecked = false
+            }
+        }
+
+        binding.chipContinue.isChecked = viewModel.selectedStatusFilter == 1
+        binding.chipFinished.isChecked = viewModel.selectedStatusFilter == 2
 
         val watchPositionItem = arrayOf(getString(R.string.also_clear_watch_positions))
         val selected = booleanArrayOf(false)
@@ -119,14 +138,42 @@ class WatchHistoryFragment : DynamicLayoutManagerFragment(R.layout.fragment_watc
                 .show()
         }
 
-        binding.statusFilterChips.setOnCheckedStateChangeListener { _, checkedIds ->
-            val continueWatchingEnabled = checkedIds.contains(binding.chipContinue.id)
-            val finishedEnabled = checkedIds.contains(binding.chipFinished.id)
-            viewModel.selectedStatusFilter = when {
-                continueWatchingEnabled && finishedEnabled -> 0
-                continueWatchingEnabled -> 1
-                finishedEnabled -> 2
-                else -> 0
+        binding.chipAll.setOnClickListener {
+            binding.chipAll.isChecked = true
+            binding.chipMusic.isChecked = false
+            binding.chipVideos.isChecked = false
+            viewModel.selectedCategoryFilter = WatchHistoryModel.FILTER_CATEGORY_ALL
+        }
+
+        binding.chipMusic.setOnClickListener {
+            binding.chipMusic.isChecked = true
+            binding.chipAll.isChecked = false
+            binding.chipVideos.isChecked = false
+            viewModel.selectedCategoryFilter = WatchHistoryModel.FILTER_CATEGORY_MUSIC
+        }
+
+        binding.chipVideos.setOnClickListener {
+            binding.chipVideos.isChecked = true
+            binding.chipAll.isChecked = false
+            binding.chipMusic.isChecked = false
+            viewModel.selectedCategoryFilter = WatchHistoryModel.FILTER_CATEGORY_VIDEOS
+        }
+
+        binding.chipContinue.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.chipFinished.isChecked = false
+                viewModel.selectedStatusFilter = 1
+            } else if (!binding.chipFinished.isChecked) {
+                viewModel.selectedStatusFilter = 0
+            }
+        }
+
+        binding.chipFinished.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.chipContinue.isChecked = false
+                viewModel.selectedStatusFilter = 2
+            } else if (!binding.chipContinue.isChecked) {
+                viewModel.selectedStatusFilter = 0
             }
         }
 
@@ -161,7 +208,6 @@ class WatchHistoryFragment : DynamicLayoutManagerFragment(R.layout.fragment_watc
         binding.watchHistoryRecView.addOnBottomReachedListener {
             viewModel.fetchNextPage()
         }
-
     }
 
     override fun onResume() {

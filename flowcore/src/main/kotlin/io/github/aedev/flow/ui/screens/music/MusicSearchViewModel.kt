@@ -2,6 +2,8 @@ package io.github.aedev.flow.ui.screens.music
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.aedev.flow.data.local.SearchHistoryItem
+import io.github.aedev.flow.data.local.SearchHistoryRepository
 import io.github.aedev.flow.data.music.DownloadManager
 import io.github.aedev.flow.innertube.YouTube
 import io.github.aedev.flow.innertube.YouTube.SearchFilter
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class MusicSearchViewModel @Inject constructor(
-    private val downloadManager: DownloadManager
+    private val downloadManager: DownloadManager,
+    private val searchHistoryRepo: SearchHistoryRepository
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
@@ -29,6 +32,10 @@ class MusicSearchViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(MusicSearchUiState())
     val uiState: StateFlow<MusicSearchUiState> = _uiState.asStateFlow()
+
+    val searchHistory: StateFlow<List<SearchHistoryItem>> =
+        searchHistoryRepo.getSearchHistoryFlow()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         // Handle search suggestions with debounce
@@ -86,6 +93,10 @@ class MusicSearchViewModel @Inject constructor(
         _query.value = q
         _uiState.update { it.copy(isLoading = true, isSearching = true, activeFilter = null) }
         
+        viewModelScope.launch(PerformanceDispatcher.diskIO) {
+            searchHistoryRepo.saveSearchQuery(q)
+        }
+
         viewModelScope.launch(PerformanceDispatcher.networkIO) {
             val result = withTimeoutOrNull(15_000L) {
                 YouTube.searchSummary(q)
@@ -103,6 +114,18 @@ class MusicSearchViewModel @Inject constructor(
             } ?: run {
                 _uiState.update { state -> state.copy(isLoading = false, error = "Search timed out") }
             }
+        }
+    }
+
+    fun deleteSearchHistoryItem(item: SearchHistoryItem) {
+        viewModelScope.launch(PerformanceDispatcher.diskIO) {
+            searchHistoryRepo.deleteSearchItem(item.id)
+        }
+    }
+
+    fun clearSearchHistory() {
+        viewModelScope.launch(PerformanceDispatcher.diskIO) {
+            searchHistoryRepo.clearSearchHistory()
         }
     }
 
@@ -212,4 +235,3 @@ data class MusicSearchUiState(
     val isMoreLoading: Boolean = false,
     val downloadedTrackIds: Set<String> = emptySet()
 )
-
