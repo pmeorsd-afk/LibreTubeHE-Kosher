@@ -1,6 +1,8 @@
 package com.github.libretube.db
 
+import androidx.room.DeleteColumn
 import androidx.room.Room
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.libretube.LibreTubeApp
@@ -83,6 +85,9 @@ object DatabaseHolder {
         }
     }
 
+    @DeleteColumn(tableName = "downloadItem", columnName = "url")
+    class MIGRATION_23_24 : AutoMigrationSpec
+
     val Database by lazy {
         Room.databaseBuilder(LibreTubeApp.instance, AppDatabase::class.java, DATABASE_NAME)
             .addMigrations(
@@ -93,7 +98,7 @@ object DatabaseHolder {
                 MIGRATION_15_16,
                 MIGRATION_17_18,
                 MIGRATION_21_22,
-                MIGRATION_22_23,
+                MIGRATION_22_23
             )
             .build()
     }

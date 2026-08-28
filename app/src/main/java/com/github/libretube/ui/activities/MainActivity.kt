@@ -660,6 +660,9 @@ class MainActivity : AbstractPlayerHostActivity() {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        // don't forward key events to the player while the search text input is used
+        if (searchItem.isActionViewExpanded) return false
+
         if (runOnPlayerFragment { this@runOnPlayerFragment.onKeyUp(keyCode, event) }) {
             return true
         }

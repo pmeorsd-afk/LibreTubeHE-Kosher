@@ -5,12 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.media3.common.C
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.SubtitleConfiguration
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MergingMediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.extractor.ExtractorsFactory
+import androidx.media3.extractor.text.DefaultSubtitleParserFactory
+import androidx.media3.extractor.text.SubtitleExtractor
 import com.github.libretube.R
 import com.github.libretube.api.MediaServiceRepository
 import com.github.libretube.api.SubscriptionHelper
@@ -31,6 +38,8 @@ import com.github.libretube.helpers.KosherMode
 import com.github.libretube.helpers.PlayerHelper.getSubtitleRoleFlags
 import com.github.libretube.helpers.ProxyHelper
 import com.github.libretube.parcelable.PlayerData
+import com.github.libretube.player.SabrMediaSource
+import com.github.libretube.player.manifest.SabrManifest
 import com.github.libretube.util.DeArrowUtil
 import com.github.libretube.util.PlayingQueue
 import com.github.libretube.util.YoutubeHlsPlaylistParser
@@ -233,36 +242,64 @@ open class OnlinePlayerService : AbstractPlayerService() {
         val streams = streams ?: return
 
         when {
-            KosherMode.ENABLED && streams.isLive && streams.hls != null -> {
-                val hlsMediaSourceFactory = HlsMediaSource.Factory(DefaultDataSource.Factory(this))
-                    .setPlaylistParserFactory(YoutubeHlsPlaylistParser.Factory())
-
+            // SABR
+            // skip SABR for livestreams, as the player impl has no support for it
+            !streams.isLive && streams.serverAbrStreamingUrl != null && streams.videoPlaybackUstreamerConfig != null -> {
+                val sabrMediaSourceFactory = SabrMediaSource.Factory(
+                    SabrManifest(videoId, streams)
+                )
                 val mediaItem = createMediaItem(
-                    ProxyHelper.rewriteUrlUsingProxyPreference(streams.hls).toUri(),
-                    MimeTypes.APPLICATION_M3U8,
+                    streams.serverAbrStreamingUrl.toUri(),
+                    "application/vnd.yt-ump",
                     streams
                 )
-                val mediaSource = hlsMediaSourceFactory.createMediaSource(mediaItem)
+                val mediaSource = sabrMediaSourceFactory.createMediaSource(mediaItem)
+                val mediaSources = listOf<MediaSource>(mediaSource) + streams.subtitles.map {
+                    val format = Format.Builder()
+                        .setSampleMimeType(it.mimeType)
+                        .setLanguage(it.code)
+                        .setRoleFlags(getSubtitleRoleFlags(it))
+                        .build()
+                    val subtitleParserFactory = DefaultSubtitleParserFactory()
+                    val extractorsFactory = ExtractorsFactory {
+                        arrayOf(
+                            SubtitleExtractor(
+                                subtitleParserFactory.create(format), format
+                            )
+                        )
+                    }
+                    val progressiveMediaSourceFactory = ProgressiveMediaSource.Factory(
+                        DefaultDataSource.Factory(this), extractorsFactory
+                    ).setLoadOnlySelectedTracks(true)
+                    try {
+                        // `enableLazyLoadingWithSingleTrack` is private
+                        val method =
+                            ProgressiveMediaSource.Factory::class.java.getDeclaredMethod(
+                                "enableLazyLoadingWithSingleTrack",
+                                Int::class.java,
+                                Format::class.java
+                            )
+                        method.isAccessible = true
+                        method.invoke(
+                            progressiveMediaSourceFactory, SubtitleExtractor.TRACK_ID,
+                            format
+                                .buildUpon()
+                                .setSampleMimeType(MimeTypes.APPLICATION_MEDIA3_CUES)
+                                .setCodecs(format.sampleMimeType)
+                                .setCueReplacementBehavior( subtitleParserFactory.getCueReplacementBehavior(format))
+                                .build()
+                        )
+                    } catch (e: Exception) {
+                        Log.w(this::class.simpleName, "failed to set subtitle lazy-loading: ${e.stackTrace}")
+                    }
+                    progressiveMediaSourceFactory.createMediaSource(MediaItem.fromUri(it.url!!))
+                }.toList()
 
-                exoPlayer?.setMediaSource(mediaSource)
+                exoPlayer?.setMediaSource(MergingMediaSource(*mediaSources.toTypedArray()))
                 return
             }
-            KosherMode.ENABLED && streams.isLive && streams.dash != null -> {
-                val mediaItem = createMediaItem(
-                    ProxyHelper.rewriteUrlUsingProxyPreference(streams.dash).toUri(),
-                    MimeTypes.APPLICATION_MPD,
-                    streams
-                )
-                exoPlayer?.setMediaItem(mediaItem)
-            }
-            KosherMode.ENABLED && streams.audioStreams.isNotEmpty() -> {
-                val audioOnlyStreams = streams.copy(videoStreams = emptyList(), hls = null, dash = null)
-                val dashUri = PlayerHelper.createDashSource(audioOnlyStreams, this)
-                val mediaItem = createMediaItem(dashUri, MimeTypes.APPLICATION_MPD, streams)
-                exoPlayer?.setMediaItem(mediaItem)
-            }
             // DASH
-            !KosherMode.ENABLED && streams.videoStreams.isNotEmpty() -> {
+            streams.videoStreams.any { it.url?.startsWith("sabr://") != true } || streams.audioStreams.isNotEmpty() -> {
                 // only use the dash manifest generated by YT if either it's a livestream or no other source is available
                 val dashUri =
                     if (streams.isLive && streams.dash != null) {
@@ -270,7 +307,9 @@ open class OnlinePlayerService : AbstractPlayerService() {
                             streams.dash
                         ).toUri()
                     } else {
-                        PlayerHelper.createDashSource(streams, this)
+                        PlayerHelper.createDashSource(streams.copy(videoStreams = streams.videoStreams.filter {
+                            it.url?.startsWith("sabr://") != true
+                        }), this)
                     }
 
                 val mediaItem = createMediaItem(dashUri, MimeTypes.APPLICATION_MPD, streams)

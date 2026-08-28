@@ -231,7 +231,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player), AudioPlaye
 
         // update the currently shown volume
         binding.volumeProgressBar.let { bar ->
-            bar.progress = audioHelper.getVolumeWithScale(bar.max)
+            bar.progress = (audioHelper.deviceVolume * bar.max).toInt().coerceIn(0, bar.max)
         }
 
         if (!PlayerHelper.playAutomatically) updatePlayPauseButton()
@@ -517,7 +517,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player), AudioPlaye
                 isVisible = true
                 // Volume could be changed using other mediums, sync progress
                 // bar with new value.
-                bar.progress = audioHelper.getVolumeWithScale(bar.max)
+                bar.progress = (audioHelper.deviceVolume * bar.max).toInt().coerceIn(0, bar.max)
             }
         }
 
@@ -530,7 +530,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player), AudioPlaye
             )
         }
         bar.incrementProgressBy(distance.toInt() / 3)
-        audioHelper.setVolumeWithScale(bar.progress, bar.max)
+        audioHelper.deviceVolume = bar.progress.toFloat() / bar.max
 
         binding.volumeTextView.text = "${bar.progress.normalize(0, bar.max, 0, 100)}"
     }

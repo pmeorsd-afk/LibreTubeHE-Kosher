@@ -28,7 +28,6 @@ import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.ui.adapters.SubscriptionAvatarAdapter
 import com.github.libretube.ui.adapters.VideoCardsAdapter
 import com.github.libretube.ui.base.DynamicLayoutManagerFragment
-import com.github.libretube.ui.models.EditChannelGroupsModel
 import com.github.libretube.ui.models.SubscriptionsViewModel
 import com.github.libretube.ui.sheets.ChannelGroupsSheet
 import com.github.libretube.ui.sheets.FilterSortBottomSheet
@@ -45,7 +44,6 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
     private val binding get() = _binding!!
 
     private val viewModel: SubscriptionsViewModel by activityViewModels()
-    private val channelGroupsModel: EditChannelGroupsModel by activityViewModels()
 
     // -1: all
     // -2: ungrouped
@@ -136,7 +134,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
             }
 
             // ungrouped chip is hidden if the user doesn't use channel groups
-            binding.chipUngrouped.isVisible = !channelGroupsModel.groups.value.isNullOrEmpty()
+            binding.chipUngrouped.isVisible = !viewModel.groups.value.isNullOrEmpty()
                     && filterUngroupedStreamItems(feed.orEmpty()).isNotEmpty()
         }
 
@@ -189,7 +187,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
             }
         }
 
-        channelGroupsModel.groups.observe(viewLifecycleOwner) {
+        viewModel.groups.observe(viewLifecycleOwner) {
             lifecycleScope.launch { initChannelGroups() }
         }
 
@@ -210,7 +208,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
         lifecycleScope.launch(Dispatchers.IO) {
             val groups = DatabaseHolder.Database.subscriptionGroupsDao().getAll()
                 .sortedBy { it.index }
-            channelGroupsModel.groups.postValue(groups)
+            viewModel.groups.postValue(groups)
         }
     }
 
@@ -284,7 +282,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
     }
 
     private fun filterUngroupedStreamItems(streamItems: List<StreamItem>): List<StreamItem> {
-        val groups = channelGroupsModel.groups.value.orEmpty()
+        val groups = viewModel.groups.value.orEmpty()
 
         return streamItems.filter { streamItem ->
             groups.none { it.channels.contains(streamItem.uploaderUrl.orEmpty().toID()) }
@@ -295,7 +293,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
     private fun initChannelGroups() {
         val binding = _binding ?: return
 
-        val groups = channelGroupsModel.groups.value.orEmpty()
+        val groups = viewModel.groups.value.orEmpty()
 
         binding.chipAll.isChecked = selectedFilterGroup == -1
         binding.chipAll.setOnLongClickListener {
@@ -339,7 +337,7 @@ class SubscriptionsFragment : DynamicLayoutManagerFragment(R.layout.fragment_sub
         if (groupIndex == -1) return this
         if (groupIndex == -2) return filterUngroupedStreamItems(this)
 
-        val group = channelGroupsModel.groups.value?.getOrNull(groupIndex)
+        val group = viewModel.groups.value?.getOrNull(groupIndex)
         return filter {
             val channelId = it.uploaderUrl.orEmpty().toID()
             group?.channels?.contains(channelId) != false

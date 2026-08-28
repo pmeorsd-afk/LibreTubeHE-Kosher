@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 24,
-    "identityHash": "eec29d92a749ce0157fa3142242f0dad",
+    "identityHash": "bc7539d8b25b90595fd440b8d9cd67bf",
     "entities": [
       {
         "tableName": "watchHistoryItem",
@@ -398,7 +398,7 @@
       },
       {
         "tableName": "downloadItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `videoId` TEXT NOT NULL, `fileName` TEXT NOT NULL, `path` TEXT NOT NULL, `url` TEXT, `format` TEXT, `quality` TEXT, `language` TEXT, `downloadSize` INTEGER NOT NULL, FOREIGN KEY(`videoId`) REFERENCES `download`(`videoId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `videoId` TEXT NOT NULL, `fileName` TEXT NOT NULL, `path` TEXT NOT NULL, `format` TEXT, `quality` TEXT, `language` TEXT, `downloadSize` INTEGER NOT NULL, FOREIGN KEY(`videoId`) REFERENCES `download`(`videoId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -429,11 +429,6 @@
             "columnName": "path",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "url",
-            "columnName": "url",
-            "affinity": "TEXT"
           },
           {
             "fieldPath": "format",
@@ -778,40 +773,11 @@
             "videoId"
           ]
         }
-      },
-      {
-        "tableName": "blockedVideo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`videoId` TEXT NOT NULL, `title` TEXT, `blockedAt` INTEGER NOT NULL, PRIMARY KEY(`videoId`))",
-        "fields": [
-          {
-            "fieldPath": "videoId",
-            "columnName": "videoId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "title",
-            "columnName": "title",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "blockedAt",
-            "columnName": "blockedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "videoId"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eec29d92a749ce0157fa3142242f0dad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc7539d8b25b90595fd440b8d9cd67bf')"
     ]
   }
 }
