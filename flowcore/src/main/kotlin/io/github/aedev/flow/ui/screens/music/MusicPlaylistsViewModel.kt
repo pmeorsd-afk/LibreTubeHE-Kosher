@@ -266,12 +266,8 @@ class MusicPlaylistsViewModel @Inject constructor(
                         e.printStackTrace()
                     }
                 }
-                
-                successCount = tracks.size 
-
-                
-                if (successCount > 0) {
-                    Toast.makeText(context, "Downloaded $successCount tracks", Toast.LENGTH_LONG).show()
+                if (tracks.isNotEmpty()) {
+                    Toast.makeText(context, "הורדת ${tracks.size} שירים החלה", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                  Log.e("MusicViewModel", "Error downloading playlist details", e)
